@@ -14,8 +14,8 @@ geometry.prob_hi     =  1.0  1.0  1.0
 # 0 = Interior   3 = Symmetry
 # 1 = Inflow     4 = Slipwall
 # 2 = Outflow    5 = NoSlipWall
-maestro.lo_bc = 4 3 4
-maestro.hi_bc = 4 4 4
+maestro.lo_bc = 4 4 4
+maestro.hi_bc = 4 2 4
 geometry.is_periodic =  0 0 0
 
 # VERBOSITY
@@ -45,7 +45,7 @@ maestro.plot_int   = 100     # number of timesteps between plot files
 maestro.plot_deltat = 0.1e0
 
 # CHECKPOINT
-maestro.check_base_name = chk
+maestro.check_base_name = 2level/chk
 maestro.chk_int         = -1
 
 # ALGORITHMIC OPTIONS
