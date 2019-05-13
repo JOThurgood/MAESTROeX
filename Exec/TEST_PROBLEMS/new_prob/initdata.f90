@@ -88,13 +88,11 @@ contains
       r = j ! this loop is currently 2d only
       x = prob_lo(1) + (dble(i)+0.5d0) * dx(1)
       y = prob_lo(2) + (dble(j)+0.5d0) * dx(2)
-      x = x - ( prob_lo(1))
-      y = y - ( prob_lo(2))
 
       rho0 = s0_init(lev,r,rho_comp)
 !      rho_local = rho0 !+ rho0**HALF * sin(x * 4.0d0 * M_PI)
 !      rho_local = rho0 * (1.0+ pert_amp * rho0**half * sin(x * 4.0d0 * M_PI))
-      rho_local = rho0 * (1.0 + pert_amp * sin(x * 4.0d0 * M_PI / 1e9))
+      rho_local = rho0 * (1.0 + pert_amp * sin(x * 4.0d0 * M_PI / (prob_hi(1) - prob_lo(1)) ) )
 
       eos_state%rho   = rho_local 
       eos_state%p     = p0_init(lev,r)
