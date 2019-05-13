@@ -11,7 +11,6 @@ module initdata_module
   use eos_type_module
   use amrex_constants_module
   use probin_module, only : pert_amp
-!!!  use probin_module, only: radius, rho_2
 
   implicit none
 
@@ -93,8 +92,9 @@ contains
       y = y - ( prob_lo(2))
 
       rho0 = s0_init(lev,r,rho_comp)
-      rho_local = rho0 !+ rho0**HALF * sin(x * 4.0d0 * M_PI)
+!      rho_local = rho0 !+ rho0**HALF * sin(x * 4.0d0 * M_PI)
 !      rho_local = rho0 * (1.0+ pert_amp * rho0**half * sin(x * 4.0d0 * M_PI))
+      rho_local = rho0 * (1.0 + pert_amp * sin(x * 4.0d0 * M_PI / 1e9))
 
       eos_state%rho   = rho_local 
       eos_state%p     = p0_init(lev,r)
