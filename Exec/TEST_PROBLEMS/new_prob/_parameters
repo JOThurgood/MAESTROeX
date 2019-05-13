@@ -1,5 +1,8 @@
-pres_base       real      1.65d6
-dens_base       real      1.65d-3
+pres_base       real      1e13
+dens_base       real      1./3.
+scale_height    real      1e9
+pert_amp        real      0.0
 do_isentropic   logical   .false.
 do_uniform      logical   .false.
-pert_amp        real      1.0e-3
+use_p_dens_g    logical   .false.
+use_p_H_g       logical   .true.

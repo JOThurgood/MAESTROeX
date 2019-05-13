@@ -94,7 +94,7 @@ contains
 
       rho0 = s0_init(lev,r,rho_comp)
       rho_local = rho0 !+ rho0**HALF * sin(x * 4.0d0 * M_PI)
-      rho_local = rho0 * (1.0+ pert_amp * rho0**half * sin(x * 4.0d0 * M_PI))
+!      rho_local = rho0 * (1.0+ pert_amp * rho0**half * sin(x * 4.0d0 * M_PI))
 
       eos_state%rho   = rho_local 
       eos_state%p     = p0_init(lev,r)

@@ -26,7 +26,8 @@ module base_state_module
        prob_hi, small_dens, small_temp, &
        anelastic_cutoff_density, buoyancy_cutoff_factor
   use base_state_geometry_module, only: nr_fine, dr, nr, max_radial_level
-  use probin_module, only: dens_base, pres_base, do_isentropic, do_uniform
+  use probin_module, only: dens_base, pres_base, do_isentropic, do_uniform, &
+        use_p_dens_g, use_p_H_g, scale_height
 
   implicit none
 
@@ -61,9 +62,23 @@ contains
     xn_zone(:) = ZERO
     xn_zone(1) = 1.d0
 
+
+    if (use_p_dens_g .and. use_p_H_g) then
+      call amrex_error("ERROR: use_p_dens_g AND use_p_H_g cannot both be true")
+    elseif (use_p_dens_g) then
+      H = pres_base / dens_base / abs(grav_const)
+    elseif (use_p_H_g) then
+      H = scale_height
+      dens_base = pres_base / H / abs(grav_const)
+    else
+      call amrex_error("ERROR: either use_p_dens_g or use_p_H_g must be true")
+    endif
+
+
+
     ! compute the pressure scale height (for an isothermal, ideal-gas
     ! atmosphere)
-    H = pres_base / dens_base / abs(grav_const)
+!    H = pres_base / dens_base / abs(grav_const)
 
     do n=0,max_radial_level
 

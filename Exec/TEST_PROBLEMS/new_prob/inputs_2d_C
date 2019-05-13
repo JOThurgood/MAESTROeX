@@ -4,11 +4,11 @@ maestro.perturb_model = false
 
 maestro.ppm_type = 0
 maestro.max_step  = 1000
-maestro.stop_time = 0.5
+maestro.stop_time = 1e3
 
 # PROBLEM SIZE
 geometry.prob_lo     =  0.0  0.0  0.0
-geometry.prob_hi     =  1.0  1.0  1.0
+geometry.prob_hi     =  1.0e9  1.0e9  1.0e9
 
 # PROBLEM SIZE & GEOMETRY
 # 0 = Interior   3 = Symmetry
@@ -86,7 +86,7 @@ maestro.eps_hg_bottom      = 1.e-4
 # HYDRODYNAMICS options
 maestro.anelastic_cutoff_density = 1.e-10
 maestro.base_cutoff_density = 1.e-10
-maestro.grav_const = -1.0e9
+maestro.grav_const = -3.0e4
 
 # EOS parameters
 maestro.small_temp = 1.e-10
@@ -101,11 +101,14 @@ system.regtest_reduction = 1
 &probin
 
   ! override the default values of the probin namelist values here
-  pres_base = 1.65d6
-  dens_base = 1.65d-3
+  pres_base = 1e13
+  dens_base = 1./3.
+  scale_height = 1e9
   pert_amp  = 0.01
   do_uniform = .false.
   do_isentropic = .false.
+  use_p_dens_g = .true.
+  use_p_h_g = .false.
 
   !extern
 
