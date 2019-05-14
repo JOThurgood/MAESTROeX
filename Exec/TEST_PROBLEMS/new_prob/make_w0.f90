@@ -54,7 +54,7 @@ contains
 
     integer         :: r,n
     double precision :: max_w0
-    
+
     call bl_proffortfuncstart("Maestro::make_w0")
     
     w0_force = ZERO
@@ -311,7 +311,7 @@ contains
     do n=0,max_radial_level
       do j=1,numdisjointchunks(n)
         do r=r_start_coord(n,j)+1,r_end_coord(n,j)+1
-          rho0_avg = HALF * (dt * rho0_old(n,r) + dtold *  rho0_new(n,r)) / dt_avg
+          rho0_avg = HALF * (dt * rho0_old(n,r-1) + dtold *  rho0_new(n,r-1)) / dt_avg
           pcal(n,r) = pcal(n,r-1) - rho0_avg * w0_force(n,r-1) * dr(n) 
         enddo 
       end do
@@ -319,12 +319,12 @@ contains
 
     do n=0,max_radial_level
       do j=1,numdisjointchunks(n)
-        do r=r_start_coord(n,j)+1,r_end_coord(n,j)+1
-          gamma1bar_p0_avg = (gamma1bar_old(n,r-1)+gamma1bar_new(n,r-1)) * &
-            (p0_old(n,r-1)+p0_new(n,r-1))/4.0d0 ! Q1 ?  
+        do r=r_start_coord(n,j),r_end_coord(n,j)
+          gamma1bar_p0_avg = (gamma1bar_old(n,r)+gamma1bar_new(n,r)) * &
+            (p0_old(n,r)+p0_new(n,r))/4.0d0 ! Q1 ?  
           correction = - pcal(n,r) * grav_const / gamma1bar_p0_avg
+print *,'w0_force (before modification)',w0_force(n,r), 'correction ',correction
           w0_force(n,r) = w0_force(n,r) + correction
-print *,correction
         enddo 
       end do
     end do
