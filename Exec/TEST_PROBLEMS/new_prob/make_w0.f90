@@ -71,6 +71,7 @@ contains
                                     dt,dtold,r_cc_loc,r_edge_loc)
        else
           call make_w0_planar(w0,w0_old,Sbar_in, &
+                              rho0_old, rho0_new, &
                               p0_old,p0_new,gamma1bar_old,gamma1bar_new, &
                               p0_minus_peosbar,etarho_cc,w0_force, &
                               dt,dtold,delta_chi_w0,is_predictor)
@@ -127,8 +128,9 @@ contains
     
   end subroutine make_w0
 
-
-  subroutine make_w0_planar(w0,w0_old,Sbar_in,p0_old,p0_new, &
+  subroutine make_w0_planar(w0,w0_old,Sbar_in, &
+                            rho0_old, rho0_new, & 
+                            p0_old,p0_new, &
                             gamma1bar_old,gamma1bar_new,p0_minus_peosbar, &
                             etarho_cc,w0_force,dt,dtold,delta_chi_w0,is_predictor)
 
@@ -146,6 +148,10 @@ contains
     double precision, intent(in   ) :: dt,dtold
     integer         , intent(in   ) :: is_predictor
 
+    ! for JTs experimental changes
+    double precision, intent(in   ) ::         rho0_old(0:max_radial_level,0:nr_fine-1)
+    double precision, intent(in   ) ::         rho0_new(0:max_radial_level,0:nr_fine-1)
+
     ! Local variables
     integer         :: r, n, i, j, refrat
     double precision :: w0_old_cen(0:max_radial_level,0:nr_fine-1)
@@ -153,6 +159,10 @@ contains
     double precision :: psi_planar(0:nr_fine-1)
     double precision :: w0_avg, div_avg, dt_avg, gamma1bar_p0_avg
     double precision :: offset
+
+    ! experimental - rename pcal something better later
+    double precision ::               pcal(0:max_radial_level,0:nr_fine  )
+    double precision :: rho0_avg, correction
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Multilevel Outline
@@ -284,6 +294,39 @@ contains
           end do
           
        end do
+    end do
+
+    call restrict_base(w0_force,1)
+    call fill_ghost_base(w0_force,1)
+
+    ! experimental - SINGLE LEVEL ONLY
+
+    if (max_radial_level /= 0) call amrex_error("experimental changes single level only")
+
+    pcal = ZERO ! zero all 
+    pcal(0,0) = ZERO ! choose bc on \mathcal(P)_{j-1/2} at level 0
+
+    dt_avg = HALF * (dt + dtold)
+
+    do n=0,max_radial_level
+      do j=1,numdisjointchunks(n)
+        do r=r_start_coord(n,j)+1,r_end_coord(n,j)+1
+          rho0_avg = HALF * (dt * rho0_old(n,r) + dtold *  rho0_new(n,r)) / dt_avg
+          pcal(n,r) = pcal(n,r-1) - rho0_avg * w0_force(n,r-1) * dr(n) 
+        enddo 
+      end do
+    end do
+
+    do n=0,max_radial_level
+      do j=1,numdisjointchunks(n)
+        do r=r_start_coord(n,j)+1,r_end_coord(n,j)+1
+          gamma1bar_p0_avg = (gamma1bar_old(n,r-1)+gamma1bar_new(n,r-1)) * &
+            (p0_old(n,r-1)+p0_new(n,r-1))/4.0d0 ! Q1 ?  
+          correction = - pcal(n,r) * grav_const / gamma1bar_p0_avg
+          w0_force(n,r) = w0_force(n,r) + correction
+print *,correction
+        enddo 
+      end do
     end do
 
     call restrict_base(w0_force,1)
