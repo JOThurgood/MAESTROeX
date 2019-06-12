@@ -6,11 +6,11 @@ module initdata_module
   use amrex_fort_module, only : amrex_spacedim
   use base_state_geometry_module, only: nr_fine, max_radial_level
   use meth_params_module, only: nscal, rho_comp, rhoh_comp, temp_comp, spec_comp, pi_comp, &
-                                prob_lo, prob_hi
+                                prob_lo, prob_hi, grav_const
   use eos_module
   use eos_type_module
   use amrex_constants_module
-  use probin_module, only : pert_amp, scale_height
+  use probin_module, only : pert_amp, scale_height, pres_base, k_hoz, k_vert
 
   implicit none
 
@@ -41,7 +41,7 @@ contains
 
     integer          :: i,j,k,r
     type (eos_t) :: eos_state
-    double precision :: x, y, rho0, rho_local 
+    double precision :: x, y, rho0, rho_local, rho_base 
 
 !    ! abort program
 !    call amrex_error()
@@ -89,13 +89,25 @@ contains
       x = prob_lo(1) + (dble(i)+0.5d0) * dx(1)
       y = prob_lo(2) + (dble(j)+0.5d0) * dx(2)
 
+
+      ! This seems to work ok with sealed box? 
+
       rho0 = s0_init(lev,r,rho_comp)
       rho_local = rho0 * (1.0 + &
         pert_amp * exp(-y/scale_height) * &
-        cos(x * 4.0d0 * M_PI / (prob_hi(1) - prob_lo(1)) ) * &
-        sin(y * 2.0d0 * M_PI / (prob_hi(2) - prob_lo(2)) )  &
+        cos(x * k_hoz * M_PI / (prob_hi(1) - prob_lo(1)) ) * &
+        sin(y * k_vert * M_PI / (prob_hi(2) - prob_lo(2)) )  &
       )
 
+      ! What about this ? 
+!      rho_base = pres_base / scale_height / abs(grav_const)
+!      rho0 = s0_init(lev,r,rho_comp)
+!      rho_local = rho0 &
+!        + rho_base * pert_amp * exp(-y/scale_height) * &
+!        cos(x * 4.0d0 * m_pi / (prob_hi(1) - prob_lo(1)) ) * &
+!        sin(y * 2.0d0 * m_pi / (prob_hi(2) - prob_lo(2)) ) 
+!      
+      !
       eos_state%rho   = rho_local 
       eos_state%p     = p0_init(lev,r)
       eos_state%T     = s0_init(lev,r,temp_comp) 
