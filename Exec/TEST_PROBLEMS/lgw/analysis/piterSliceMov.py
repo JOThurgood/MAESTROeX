@@ -1,8 +1,13 @@
+#
+# This doesn't seem to do anything different - the serial loop seems to be auto parallelised
+# (if not the loop, the constructing of hte image seems to use multithreading)
+
+
 import yt
 yt.enable_parallelism()
 
 # Load data as a time series
-ts = yt.load("../single_level/plt???????/", parallel=4) # I'd love a way to make this quiet
+ts = yt.load("../single_level/plt???????/", parallel=20) # I'd love a way to make this quiet
 
 var = "rhopert";
 fileprefix='testout/'
