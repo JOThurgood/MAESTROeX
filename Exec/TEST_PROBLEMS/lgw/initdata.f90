@@ -92,21 +92,22 @@ contains
 
       ! This seems to work ok with sealed box? 
 
-      rho0 = s0_init(lev,r,rho_comp)
-      rho_local = rho0 * (1.0 + &
-        pert_amp * exp(-y/scale_height) * &
-        cos(x * k_hoz * M_PI / (prob_hi(1) - prob_lo(1)) ) * &
-        sin(y * k_vert * M_PI / (prob_hi(2) - prob_lo(2)) )  &
-      )
-
-      ! What about this ? 
-!      rho_base = pres_base / scale_height / abs(grav_const)
 !      rho0 = s0_init(lev,r,rho_comp)
-!      rho_local = rho0 &
-!        + rho_base * pert_amp * exp(-y/scale_height) * &
-!        cos(x * 4.0d0 * m_pi / (prob_hi(1) - prob_lo(1)) ) * &
-!        sin(y * 2.0d0 * m_pi / (prob_hi(2) - prob_lo(2)) ) 
-!      
+!      rho_local = rho0 * (1.0 + &
+!        pert_amp * exp(-y/(2.0_num * scale_height)) * &
+!        cos(x * k_hoz * M_PI / (prob_hi(1) - prob_lo(1)) ) * &
+!        sin(y * k_vert * M_PI / (prob_hi(2) - prob_lo(2)) )  &
+!      )
+
+      ! What about this ?
+ 
+      rho_base = pres_base / scale_height / abs(grav_const)
+      rho0 = s0_init(lev,r,rho_comp)
+      rho_local = rho0 &
+        + rho_base * pert_amp * exp(-y/(2d0 * scale_height)) * &
+        cos(x * k_hoz * m_pi / (prob_hi(1) - prob_lo(1)) ) * &
+        sin(y * k_vert * m_pi / (prob_hi(2) - prob_lo(2)) ) 
+      
       !
       eos_state%rho   = rho_local 
       eos_state%p     = p0_init(lev,r)
