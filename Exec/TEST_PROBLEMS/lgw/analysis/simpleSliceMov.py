@@ -5,7 +5,7 @@ ts = yt.load("../single_level/plt???????/") # I'd love a way to make this quiet
 
 var = "rhopert";
 filenum = 0
-fileprefix='testout/'
+fileprefix='tmp/'
 
 for ds in ts:
     plot = yt.SlicePlot(ds, "z", var);

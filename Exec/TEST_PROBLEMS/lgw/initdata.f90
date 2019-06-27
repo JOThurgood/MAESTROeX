@@ -107,7 +107,16 @@ contains
         + rho_base * pert_amp * exp(-y/(2d0 * scale_height)) * &
         cos(x * k_hoz * m_pi / (prob_hi(1) - prob_lo(1)) ) * &
         sin(y * k_vert * m_pi / (prob_hi(2) - prob_lo(2)) ) 
+
+      ! if k_vert is 0, dont multiply by sin(0) = 0
+      ! (make this all more elegant later)
       
+      if (k_vert == 0d0) then
+        rho_local = rho0 &
+          + rho_base * pert_amp * exp(-y/(2d0 * scale_height)) * &
+          cos(x * k_hoz * m_pi / (prob_hi(1) - prob_lo(1)) )
+      endif
+
       !
       eos_state%rho   = rho_local 
       eos_state%p     = p0_init(lev,r)
