@@ -49,7 +49,7 @@ contains
     ! local variables
     integer         :: n,r,j
     double precision :: H,z,z0, gamma_const
-    double precision :: dens_zone, temp_zone
+    double precision :: dens_zone
     double precision :: xn_zone(nspec)
 
     type (eos_t) :: eos_state
@@ -58,11 +58,11 @@ contains
        call amrex_error("ERROR: base_state is not valid for spherical")
     endif
 
-    ! only initialize the first species
+    ! strictly single species
     xn_zone(:) = ZERO
     xn_zone(1) = 1.d0
 
-
+    ! calculate H or dens_base, as necessary
     if (use_p_dens_g .and. use_p_H_g) then
       call amrex_error("ERROR: use_p_dens_g AND use_p_H_g cannot both be true")
     elseif (use_p_dens_g) then
@@ -75,57 +75,36 @@ contains
     endif
 
 
-
-    ! compute the pressure scale height (for an isothermal, ideal-gas
-    ! atmosphere)
-!    H = pres_base / dens_base / abs(grav_const)
-
     do n=0,max_radial_level
 
-       ! for isentropic, we satisfy p ~ rho^gamma, but we'll need to get gamma
-       eos_state % rho = dens_base
-       eos_state % p = pres_base
+       ! Set the state in the first cell in the vertical direction
+       ! ("the bottom")
+       z0 = 0.5d0*dr(n) ! generic "z", actually 2d/3d agnostic
+
+       ! set p0 and rho0 based on analytical value at the cc coord
+       p0_init(n,0) = pres_base * exp(-z0/H)
+       s0_init(n,0, rho_comp) = dens_base * exp(-z0/H)
+
+       ! use eos call to be consistent
+       eos_state % rho = p0_init(n,0)
+       eos_state % p = s0_init(n,0, rho_comp)
        eos_state % xn(:) = xn_zone(:)
+       eos_state % T = 1000.0d0 ! just a guess... needed? no guess on e.g. h
+       call eos(eos_input_rp, eos_state) ! (rho, p) --> T, h
 
-       ! initial guess
-       eos_state % T = 1000.0d0
-
-       call eos(eos_input_rp, eos_state)
-
-       gamma_const = pres_base/(dens_base * eos_state % e) + 1.0d0
-
-       p0_init(n,0) = pres_base
-       s0_init(n,0, rho_comp) = dens_base
-
+       ! set other base vars
        s0_init(n,0,rhoh_comp) = dens_base * eos_state%h
-
        s0_init(n,0,spec_comp:spec_comp-1+nspec) = dens_base*xn_zone(:)
-
        s0_init(n,0,temp_comp) = eos_state%T
 
-       z0 = 0.5d0*dr(n)
-
-       ! set an initial guess for the temperature -- this will be reset
-       ! by the EOS
-       temp_zone = 1000.d0
-
-       do r=1,nr(n)-1
+      
+      do r=1,nr(n)-1
 
           z = (dble(r)+HALF) * dr(n)
 
-          if (do_isentropic) then
-             ! we can integrate HSE with p = K rho^gamma analytically
-             dens_zone = dens_base*(grav_const*dens_base*(gamma_const - 1.0)* &
-                  (z-z0)/ &
-                  (gamma_const*pres_base) + 1.d0)**(1.d0/(gamma_const - 1.d0))
-          else if (do_uniform) then
-            dens_zone = dens_base
-          else
-            ! the density of an isothermal gamma-law atm is exponential
-            dens_zone = dens_base * exp(-z/H)
-          end if
-
-          s0_init(n,r, rho_comp) = dens_zone
+          ! set rho analytically          
+          dens_zone = dens_base * exp(-z/H)
+          s0_init(n,r, rho_comp) = dens_zone ! needs to be set before pressure 
 
           ! compute the pressure by discretizing HSE
           p0_init(n,r) = p0_init(n,r-1) - &
@@ -135,17 +114,13 @@ contains
           ! use the EOS to make the state consistent
           eos_state%rho   = dens_zone
           eos_state%p     = p0_init(n,r)
-          eos_state%T     = temp_zone
+          eos_state%T     = 1000.d0 ! just a  guess
           eos_state%xn(:) = xn_zone(:)
+          call eos(eos_input_rp, eos_state) ! (rho,p) --> T, h
 
-          ! (rho,p) --> T, h
-          call eos(eos_input_rp, eos_state)
-
-          s0_init(n,r, rho_comp) = dens_zone
+          ! save the state
           s0_init(n,r,rhoh_comp) = dens_zone * eos_state%h
-
           s0_init(n,r,spec_comp:spec_comp-1+nspec) = dens_zone*xn_zone(:)
-
           s0_init(n,r,temp_comp) = eos_state%T
 
        end do
