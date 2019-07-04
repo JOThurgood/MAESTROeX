@@ -362,8 +362,6 @@ Maestro::DiagFile (const int step,
                             ((coord_Tmax[1] - center[1])/Rloc_Tmax)*vel_Tmax[1] +
                             ((coord_Tmax[2] - center[2])/Rloc_Tmax)*vel_Tmax[2];
                 }
-// short circut
-return;
 
             }
 
@@ -376,18 +374,20 @@ return;
                     vel_enucmax[i] = vel_enucmax_level[i];
                 }
 
-                // compute the radius of the bubble from the center
-                Rloc_enucmax = sqrt( (coord_enucmax[0] - center[0])*(coord_enucmax[0] - center[0]) +
-                                     (coord_enucmax[1] - center[1])*(coord_enucmax[1] - center[1]) +
-                                     (coord_enucmax[2] - center[2])*(coord_enucmax[2] - center[2]) );
-
-                // use the coordinates of the hot spot and the velocity components
-                // to compute the radial velocity at the hotspot
-                vr_enucmax = ((coord_enucmax[0] - center[0])/Rloc_enucmax)*vel_enucmax[0] +
-                             ((coord_enucmax[1] - center[1])/Rloc_enucmax)*vel_enucmax[1] +
-                             ((coord_enucmax[2] - center[2])/Rloc_enucmax)*vel_enucmax[2];
-
+                if (spherical == 1) { 
+                  // compute the radius of the bubble from the center
+                  Rloc_enucmax = sqrt( (coord_enucmax[0] - center[0])*(coord_enucmax[0] - center[0]) +
+                                       (coord_enucmax[1] - center[1])*(coord_enucmax[1] - center[1]) +
+                                       (coord_enucmax[2] - center[2])*(coord_enucmax[2] - center[2]) );
+  
+                  // use the coordinates of the hot spot and the velocity components
+                  // to compute the radial velocity at the hotspot
+                  vr_enucmax = ((coord_enucmax[0] - center[0])/Rloc_enucmax)*vel_enucmax[0] +
+                               ((coord_enucmax[1] - center[1])/Rloc_enucmax)*vel_enucmax[1] +
+                               ((coord_enucmax[2] - center[2])/Rloc_enucmax)*vel_enucmax[2];
+                }
             }
+
 
             T_center = T_center + T_center_level;
             for (int i=0; i<AMREX_SPACEDIM; ++i) {
@@ -396,6 +396,9 @@ return;
             ncenter = ncenter + ncenter_level;
         }
     }
+
+// short circut
+return;
 
     // compute the graviational potential energy too
     Real grav_ener=0.0;
