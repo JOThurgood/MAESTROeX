@@ -191,7 +191,6 @@ Maestro::DiagFile (const int step,
                         &enuc_max_local, coord_enucmax_local.dataPtr(), vel_enucmax_local.dataPtr(),
                         &kin_ener_level, &int_ener_level, &nuc_ener_level,
                         &U_max_level, &Mach_max_level,
-                        &ncenter_level,
                         BL_TO_FORTRAN_3D(mask[mfi]), &use_mask);
 
              }

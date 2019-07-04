@@ -55,7 +55,6 @@ contains
                        enuc_max, coord_enucmax, vel_enucmax, &
                        kin_ener, int_ener, nuc_ener, &
                        U_max, Mach_max, &
-                       ncenter, &
                        mask,     m_lo, m_hi, use_mask) &
                        bind(C, name="testdiag")
 
@@ -74,7 +73,6 @@ contains
     double precision, intent(inout) :: enuc_max, coord_enucmax(3), vel_enucmax(3)
     double precision, intent(inout) :: kin_ener, int_ener, nuc_ener
     double precision, intent(inout) :: U_max, Mach_max
-    integer         , intent(inout) :: ncenter !! ?
     integer         , intent (in   ) :: m_lo(3), m_hi(3)
     integer         , intent (in   ) :: mask(m_lo(1):m_hi(1),m_lo(2):m_hi(2),m_lo(3):m_hi(3))
     integer         , intent (in   ) :: use_mask
@@ -88,14 +86,15 @@ contains
 
     type (eos_t) :: eos_state
 
+    print *, 'Hi from testdiag'
 
     ! weight is the factor by which the volume of a cell at the current level
     ! relates to the volume of a cell at the coarsest level of refinement.
-#if (amrex_spacedim == 1)
+#if (AMREX_SPACEDIM == 1)
     weight = 1.d0 / 2.d0**(lev)
-#elif (amrex_spacedim == 2)
+#elif (AMREX_SPACEDIM == 2)
     weight = 1.d0 / 4.d0**(lev)
-#elif (amrex_spacedim == 3)
+#elif (AMREX_SPACEDIM == 3)
     weight = 1.d0 / 8.d0**(lev)
 #endif
 
@@ -113,6 +112,7 @@ contains
           end if
           
           if (cell_valid) then
+
             ! vel is the magnitude of the velocity, including w0
 #if (AMREX_SPACEDIM == 1)
             vel = sqrt( (u(i,j,k,1) + 0.5d0*(w0(lev,i) + w0(lev,i+1)) )**2 )
@@ -125,34 +125,66 @@ contains
                           ( u(i,j,k,3) + 0.5d0*(w0(lev,k) + w0(lev,k+1)) )**2 )
 #endif
 
-!!!!            ! call the EOS to get the sound speed and internal energy
-!!!!            eos_state%T     = scal(i,j,k,temp_comp)
-!!!!            eos_state%rho   = scal(i,j,k,rho_comp)
-!!!!            eos_state%xn(:) = scal(i,j,k,spec_comp:spec_comp+nspec-1)/eos_state%rho
-!!!!            
-!!!!            call eos(eos_input_rt, eos_state)
-!!!!            
-!!!!            ! max Mach number
-!!!!            Mach_max = max(Mach_max,vel/eos_state%cs)
-!!!!            
-!!!!            ! max temp and enuc
-!!!!            temp_max = max(temp_max,scal(i,j,k,temp_comp))
-!!!!            enuc_max = max(enuc_max,rho_Hnuc(i,j,k)/scal(i,j,k,rho_comp))
-!!!!            Hext_max = max(Hext_max,rho_Hext(i,j,k)/scal(i,j,k,rho_comp))
-!!!!
+            ! max T, location, and velocity at that location (including w0)
+            if ( scal(i,j,k,temp_comp) > T_max ) then
+               T_max         = scal(i,j,k,temp_comp)
+               coord_Tmax(1) = x
+               coord_Tmax(2) = y
+               coord_Tmax(3) = z
+               vel_Tmax(1)   = u(i,j,k,1)
+               vel_Tmax(2)   = u(i,j,k,2)
+               vel_Tmax(3)   = u(i,j,k,3)
+#if (AMREX_SPACEDIM == 1)
+               vel_Tmax(1)   = vel_Tmax(1) + 0.5d0*(w0(lev,i) + w0(lev,i+1))
+#elif (AMREX_SPACEDIM == 2)
+               vel_Tmax(2)   = vel_Tmax(2) + 0.5d0*(w0(lev,j) + w0(lev,j+1))
+#elif (AMREX_SPACEDIM == 3)
+               vel_Tmax(3)   = vel_Tmax(3) + 0.5d0*(w0(lev,k) + w0(lev,k+1))
+#endif
+            end if
+
+            ! max enuc
+            if ( rho_Hnuc(i,j,k)/scal(i,j,k,rho_comp) > enuc_max ) then
+              enuc_max         = rho_Hnuc(i,j,k)/scal(i,j,k,rho_comp)
+              coord_enucmax(1) = x
+              coord_enucmax(2) = y
+              coord_enucmax(3) = z
+              vel_enucmax(1)   = u(i,j,k,1)
+              vel_enucmax(2)   = u(i,j,k,2)
+              vel_enucmax(3)   = u(i,j,k,3)
+#if (AMREX_SPACEDIM == 1)
+              vel_enucmax(1)   = vel_enucmax(1) + 0.5d0*(w0(lev,i) + w0(lev,i+1))
+#elif (AMREX_SPACEDIM == 2)
+              vel_enucmax(2)   = vel_enucmax(2) + 0.5d0*(w0(lev,j) + w0(lev,j+1))
+#elif (AMREX_SPACEDIM == 3)
+              vel_enucmax(3)   = vel_enucmax(3) + 0.5d0*(w0(lev,k) + w0(lev,k+1))
+#endif
+            end if
+
+            ! call the EOS to get the sound speed and internal energy
+            eos_state%T     = scal(i,j,k,temp_comp)
+            eos_state%rho   = scal(i,j,k,rho_comp)
+            eos_state%xn(:) = scal(i,j,k,spec_comp:spec_comp+nspec-1)/eos_state%rho
+                
+            call eos(eos_input_rt, eos_state)
+
+            ! kinetic, internal, and nuclear energies
+            kin_ener = kin_ener + weight*scal(i,j,k,rho_comp)*vel**2
+            int_ener = int_ener + weight*scal(i,j,k,rho_comp)*eos_state%e
+            nuc_ener = nuc_ener + weight*rho_Hnuc(i,j,k)
+            
             ! max vel and Mach number
             U_max = max(U_max,vel)
-            !!Mach_max = max(Mach_max,vel/eos_state%cs)
+            Mach_max = max(Mach_max,vel/eos_state%cs)
 
           endif ! if cell valid
         enddo
       enddo
     enddo
     
-    print *, 'Hi from testdiag'
-    print *, 'U_max = ', U_max
+    print *, 'goodbye from testdiag'
 
-  endsubroutine testdiag
+  end subroutine testdiag
 
   !xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   subroutine diag(lev, lo, hi, &
@@ -231,6 +263,7 @@ contains
                      u(i,j,k,2)**2 + &
                      ( u(i,j,k,3) + 0.5d0*(w0(lev,k) + w0(lev,k+1)) )**2 )
 #endif
+
 
                 ! call the EOS to get the sound speed and internal energy
                 eos_state%T     = scal(i,j,k,temp_comp)

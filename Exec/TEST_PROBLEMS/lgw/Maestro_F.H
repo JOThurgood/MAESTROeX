@@ -226,9 +226,8 @@ extern "C"
 		   amrex::Real* enuc_max, amrex::Real* coord_enucmax, amrex::Real* vel_enucmax,
 		   amrex::Real* kin_ener, amrex::Real* int_ener, amrex::Real* nuc_ener,
 		   amrex::Real* U_max, amrex::Real* Mach_max,
-		   int* ncenter,
-                   const int* mask, const int* m_lo, const int* m_hi,
-                   const int* use_mask);
+       const int* mask, const int* m_lo, const int* m_hi,
+       const int* use_mask);
 
     void diag(const int* lev, const int* lo, const int* hi,
 	      const amrex::Real* scal, const int* s_lo, const int* s_hi, const int* nc_s,
