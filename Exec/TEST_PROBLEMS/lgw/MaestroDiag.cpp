@@ -397,7 +397,7 @@ Maestro::DiagFile (const int step,
         }
     }
 
-
+    // DOES THIS NEED MODIFIED FOR PLANAR?!?
     // compute the graviational potential energy too
     Real grav_ener=0.0;
     diag_grav_energy(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
@@ -698,17 +698,15 @@ Maestro::WriteDiagFile (int& index)
         // T_max
         // coord_Tmax (3)
         // vel_Tmax (3)
-        // Rloc_Tmax
-        // vr_Tmax
-        // T_center
-        // Mach_max
+        // plus, if spherical:
+        // -- Rloc_Tmax
+        // -- vr_Tmax
+        // -- T_center
 
         diagfile1.precision(10);
         diagfile1 << std::scientific;
         for (int ii=0; ii<index; ++ii) {
-            //for (int icomp=0; icomp<11; ++icomp) {
             for (int icomp=0; icomp<ndiag1; ++icomp) {
-                //diagfile1 << std::setw(20) << std::left << diagfile1_data[ii*11+icomp];
                 diagfile1 << std::setw(20) << std::left << diagfile1_data[ii*ndiag1+icomp];
             }
             Warning("in the endline part");
