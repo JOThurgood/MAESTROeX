@@ -306,8 +306,6 @@ Maestro::DiagFile (const int step,
             ParallelDescriptor::Gather(&enuc_max_coords[0], 2*AMREX_SPACEDIM,
                                        &enuc_max_coords_level[0], 2*AMREX_SPACEDIM, ioproc);
         }
-// short circut
-return;
 
         // initialize global variables
         Vector<Real> coord_enucmax_level(AMREX_SPACEDIM);
@@ -315,7 +313,8 @@ return;
 
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             coord_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i];
-            vel_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i+3];
+//            vel_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i+3]; // magic number
+            vel_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i+AMREX_SPACEDIM];
         }
 
 
@@ -330,6 +329,8 @@ return;
 
             U_max = max(U_max, U_max_level);
             Mach_max = max(Mach_max, Mach_max_level);
+// short circut
+return;
 
             // compute center of domain
             Vector<Real> center(3, 0.0);
