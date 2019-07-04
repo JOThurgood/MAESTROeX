@@ -329,11 +329,11 @@ Maestro::DiagFile (const int step,
 
             U_max = max(U_max, U_max_level);
             Mach_max = max(Mach_max, Mach_max_level);
-// short circut
-return;
 
             // compute center of domain
-            Vector<Real> center(3, 0.0);
+            // (in planar, this will be center of box - dubious utility but saves more if spherical)
+            //Vector<Real> center(3, 0.0);
+            Vector<Real> center(AMREX_SPACEDIM, 0.0);
             const Real* probLo = geom[0].ProbLo();
             const Real* probHi = geom[0].ProbHi();
 
@@ -350,16 +350,21 @@ return;
                     vel_Tmax[i] = vel_Tmax_level[i];
                 }
 
-                // compute the radius of the bubble from the center
-                Rloc_Tmax = sqrt( (coord_Tmax[0] - center[0])*(coord_Tmax[0] - center[0]) +
-                                  (coord_Tmax[1] - center[1])*(coord_Tmax[1] - center[1]) +
-                                  (coord_Tmax[2] - center[2])*(coord_Tmax[2] - center[2]) );
+                if (spherical == 1) { 
+                  // compute the radius of the bubble from the center
+                  Rloc_Tmax = sqrt( (coord_Tmax[0] - center[0])*(coord_Tmax[0] - center[0]) +
+                                    (coord_Tmax[1] - center[1])*(coord_Tmax[1] - center[1]) +
+                                    (coord_Tmax[2] - center[2])*(coord_Tmax[2] - center[2]) );
 
-                // use the coordinates of the hot spot and the velocity components
-                // to compute the radial velocity at the hotspot
-                vr_Tmax = ((coord_Tmax[0] - center[0])/Rloc_Tmax)*vel_Tmax[0] +
-                          ((coord_Tmax[1] - center[1])/Rloc_Tmax)*vel_Tmax[1] +
-                          ((coord_Tmax[2] - center[2])/Rloc_Tmax)*vel_Tmax[2];
+                  // use the coordinates of the hot spot and the velocity components
+                  // to compute the radial velocity at the hotspot
+                  vr_Tmax = ((coord_Tmax[0] - center[0])/Rloc_Tmax)*vel_Tmax[0] +
+                            ((coord_Tmax[1] - center[1])/Rloc_Tmax)*vel_Tmax[1] +
+                            ((coord_Tmax[2] - center[2])/Rloc_Tmax)*vel_Tmax[2];
+                }
+// short circut
+return;
+
             }
 
             // if enuc_max_level is the new max, then copy the location as well
