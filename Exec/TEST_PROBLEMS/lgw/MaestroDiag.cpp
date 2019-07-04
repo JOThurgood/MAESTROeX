@@ -440,6 +440,8 @@ Maestro::DiagFile (const int step,
         const std::string& diagfilename3 = "diag_vel.out";
         std::ofstream diagfile3;
 
+        // num of variables in the outfile depends on geometry but not dimension
+        const int ndiag1 = (spherical == 1) ? 8 : 11;
   
 
         if (step == 0) {
@@ -485,13 +487,11 @@ Maestro::DiagFile (const int step,
             diagfile1 << std::setw(20) << std::left << "vy(max{T})";
             diagfile1 << std::setw(20) << std::left << "vz(max{T})";
             if (spherical == 1) {
-              const int numVarsDiag1 = 11;
               diagfile1 << std::setw(20) << std::left << "R(max{T})";
               diagfile1 << std::setw(20) << std::left << "vr(max{T})";
               diagfile1 << std::setw(20) << std::left << "T_center" << std::endl;
             } else {
               diagfile1 << std::endl;
-              const int numVarsDiag1 = 8;
             }
 
             // write data
@@ -604,23 +604,42 @@ Maestro::DiagFile (const int step,
 
         } else {
 
-            Warning("test");
-            std::cout << numVarsDiag1;
-
             // store variable values in data array to be written later
 
             // temp
-            diagfile1_data[index*11  ] = t_in;
-            diagfile1_data[index*11+1] = T_max;
-            diagfile1_data[index*11+2] = coord_Tmax[0];
-            diagfile1_data[index*11+3] = coord_Tmax[1];
-            diagfile1_data[index*11+4] = coord_Tmax[2];
-            diagfile1_data[index*11+5] = vel_Tmax[0];
-            diagfile1_data[index*11+6] = vel_Tmax[1];
-            diagfile1_data[index*11+7] = vel_Tmax[2];
-            diagfile1_data[index*11+8] = Rloc_Tmax;
-            diagfile1_data[index*11+9] = vr_Tmax;
-            diagfile1_data[index*11+10] = T_center;
+            diagfile1_data[index*ndiag1  ] = t_in;
+            diagfile1_data[index*ndiag1+1] = T_max;
+            switch(AMREX_SPACEDIM){
+              case 1:
+                diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
+                diagfile1_data[index*ndiag1+3] = 0.0;
+                diagfile1_data[index*ndiag1+4] = 0.0;
+                diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
+                diagfile1_data[index*ndiag1+6] = 0.0;
+                diagfile1_data[index*ndiag1+7] = 0.0;
+                break;
+              case 2:
+                diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
+                diagfile1_data[index*ndiag1+3] = coord_Tmax[1];
+                diagfile1_data[index*ndiag1+4] = 0.0;
+                diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
+                diagfile1_data[index*ndiag1+6] = vel_Tmax[1];
+                diagfile1_data[index*ndiag1+7] = 0.0;
+                break;
+              case 3:
+                diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
+                diagfile1_data[index*ndiag1+3] = coord_Tmax[1];
+                diagfile1_data[index*ndiag1+4] = coord_Tmax[2];
+                diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
+                diagfile1_data[index*ndiag1+6] = vel_Tmax[1];
+                diagfile1_data[index*ndiag1+7] = vel_Tmax[2];
+                break;
+            }
+            if (spherical == 1) {
+              diagfile1_data[index*ndiag1+8] = Rloc_Tmax;
+              diagfile1_data[index*ndiag1+9] = vr_Tmax;
+              diagfile1_data[index*ndiag1+10] = T_center;
+            }
 
 ////            // enuc
 ////            diagfile2_data[index*11  ] = t_in;
