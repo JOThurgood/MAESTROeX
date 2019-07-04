@@ -430,8 +430,6 @@ Maestro::DiagFile (const int step,
           }
         }
     }
-// short circut
-return;
 
     // write out diagnosis data if at initialization
     if (ParallelDescriptor::IOProcessor()) {
@@ -442,7 +440,36 @@ return;
         const std::string& diagfilename3 = "diag_vel.out";
         std::ofstream diagfile3;
 
+  
+
         if (step == 0) {
+
+/// could also use switches like so
+//            switch(AMREX_SPACEDIM){
+//              case 1:
+//                Warning("switch");
+//                std::cout<<AMREX_SPACEDIM<<std::endl;
+//                break;
+//              case 2:
+//                Warning("switch");
+//                std::cout<<AMREX_SPACEDIM<<std::endl;
+//                break;
+//              case 3:
+//                Warning("switch");
+//                std::cout<<AMREX_SPACEDIM<<std::endl;
+//                break;
+//            }
+//  could do this to dynamically change the headers but i think its over egging it
+//  maybe just set vz = 0 all the time if its 2d
+///            std::string strStart = "xyz";
+///            std::string strEnd   = "(max{T})";
+///            std::string strIO;
+///            for (int idim=0; idim<AMREX_SPACEDIM; ++idim) {
+///              strIO = strStart[idim] + strEnd;
+///              //std::cout<< "STRING" << xyzStr[idim] << std::endl;
+///              std::cout<< strIO << std::endl;
+///            }
+
             // create file after initialization
             diagfile1.open(diagfilename1, std::ofstream::out |
                            std::ofstream::trunc | std::ofstream::binary);
@@ -457,95 +484,128 @@ return;
             diagfile1 << std::setw(20) << std::left << "vx(max{T})";
             diagfile1 << std::setw(20) << std::left << "vy(max{T})";
             diagfile1 << std::setw(20) << std::left << "vz(max{T})";
-            diagfile1 << std::setw(20) << std::left << "R(max{T})";
-            diagfile1 << std::setw(20) << std::left << "vr(max{T})";
-            diagfile1 << std::setw(20) << std::left << "T_center" << std::endl;
+            if (spherical == 1) {
+              const int numVarsDiag1 = 11;
+              diagfile1 << std::setw(20) << std::left << "R(max{T})";
+              diagfile1 << std::setw(20) << std::left << "vr(max{T})";
+              diagfile1 << std::setw(20) << std::left << "T_center" << std::endl;
+            } else {
+              diagfile1 << std::endl;
+              const int numVarsDiag1 = 8;
+            }
 
             // write data
             diagfile1.precision(10);
             diagfile1 << std::scientific;
             diagfile1 << std::setw(20) << std::left << t_in;
             diagfile1 << std::setw(20) << std::left << T_max;
-            diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
-            diagfile1 << std::setw(20) << std::left << coord_Tmax[2];
-            diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
-            diagfile1 << std::setw(20) << std::left << vel_Tmax[2];
-            diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
-            diagfile1 << std::setw(20) << std::left << vr_Tmax;
-            diagfile1 << std::setw(20) << std::left << T_center << std::endl;
+
+            switch(AMREX_SPACEDIM){
+              case 1:
+                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+                diagfile1 << std::setw(20) << std::left << 0.0;
+                diagfile1 << std::setw(20) << std::left << 0.0;
+                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+                diagfile1 << std::setw(20) << std::left << 0.0;
+                diagfile1 << std::setw(20) << std::left << 0.0;
+                break;
+              case 2:
+                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
+                diagfile1 << std::setw(20) << std::left << 0.0;
+                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
+                diagfile1 << std::setw(20) << std::left << 0.0;
+                break;
+              case 3:
+                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
+                diagfile1 << std::setw(20) << std::left << coord_Tmax[2];
+                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
+                diagfile1 << std::setw(20) << std::left << vel_Tmax[2];
+                break;
+            }
+
+            if (spherical == 1) {
+              diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
+              diagfile1 << std::setw(20) << std::left << vr_Tmax;
+              diagfile1 << std::setw(20) << std::left << T_center << std::endl;
+            }
 
             // close files
             diagfile1.close();
 
-            // diag_enuc.out
-            diagfile2.open(diagfilename2, std::ofstream::out |
-                           std::ofstream::trunc | std::ofstream::binary);
-            // write variable names
-            diagfile2 << std::setw(20) << std::left << "time";
-            diagfile2 << std::setw(20) << std::left << "max{enuc}";
-            diagfile2 << std::setw(20) << std::left << "x(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "y(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "z(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vx(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vy(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vz(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "R(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vr(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "tot nuc ener(erg/s)" << std::endl;
-
-            // write data
-            diagfile2.precision(10);
-            diagfile2 << std::scientific;
-            diagfile2 << std::setw(20) << std::left << t_in;
-            diagfile2 << std::setw(20) << std::left << enuc_max;
-            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
-            diagfile2 << std::setw(20) << std::left << coord_enucmax[1];
-            diagfile2 << std::setw(20) << std::left << coord_enucmax[2];
-            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
-            diagfile2 << std::setw(20) << std::left << vel_enucmax[1];
-            diagfile2 << std::setw(20) << std::left << vel_enucmax[2];
-            diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
-            diagfile2 << std::setw(20) << std::left << vr_enucmax;
-            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
-
-            // close file
-            diagfile2.close();
-
-            // diag_vel.out
-            diagfile3.open(diagfilename3, std::ofstream::out |
-                           std::ofstream::trunc | std::ofstream::binary);
-            // write variable names
-            diagfile3 << std::setw(20) << std::left << "time";
-            diagfile3 << std::setw(20) << std::left << "max{U}";
-            diagfile3 << std::setw(20) << std::left << "max{Mach}";
-            diagfile3 << std::setw(20) << std::left << "tot kin energy";
-            diagfile3 << std::setw(20) << std::left << "tot grav energy";
-            diagfile3 << std::setw(20) << std::left << "tot int energy";
-            diagfile3 << std::setw(20) << std::left << "velx_center";
-            diagfile3 << std::setw(20) << std::left << "vely_center";
-            diagfile3 << std::setw(20) << std::left << "velz_center";
-            diagfile3 << std::setw(20) << std::left << "dt" << std::endl;
-
-            // write data
-            diagfile3.precision(10);
-            diagfile3 << std::scientific;
-            diagfile3 << std::setw(20) << std::left << t_in;
-            diagfile3 << std::setw(20) << std::left << U_max;
-            diagfile3 << std::setw(20) << std::left << Mach_max;
-            diagfile3 << std::setw(20) << std::left << kin_ener;
-            diagfile3 << std::setw(20) << std::left << grav_ener;
-            diagfile3 << std::setw(20) << std::left << int_ener;
-            diagfile3 << std::setw(20) << std::left << vel_center[0];
-            diagfile3 << std::setw(20) << std::left << vel_center[1];
-            diagfile3 << std::setw(20) << std::left << vel_center[2];
-            diagfile3 << std::setw(20) << std::left << dt << std::endl;
-
-            // close file
-            diagfile3.close();
+////            // diag_enuc.out
+////            diagfile2.open(diagfilename2, std::ofstream::out |
+////                           std::ofstream::trunc | std::ofstream::binary);
+////            // write variable names
+////            diagfile2 << std::setw(20) << std::left << "time";
+////            diagfile2 << std::setw(20) << std::left << "max{enuc}";
+////            diagfile2 << std::setw(20) << std::left << "x(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "y(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "z(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "vx(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "vy(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "vz(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "R(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "vr(max{enuc})";
+////            diagfile2 << std::setw(20) << std::left << "tot nuc ener(erg/s)" << std::endl;
+////
+////            // write data
+////            diagfile2.precision(10);
+////            diagfile2 << std::scientific;
+////            diagfile2 << std::setw(20) << std::left << t_in;
+////            diagfile2 << std::setw(20) << std::left << enuc_max;
+////            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
+////            diagfile2 << std::setw(20) << std::left << coord_enucmax[1];
+////            diagfile2 << std::setw(20) << std::left << coord_enucmax[2];
+////            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
+////            diagfile2 << std::setw(20) << std::left << vel_enucmax[1];
+////            diagfile2 << std::setw(20) << std::left << vel_enucmax[2];
+////            diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
+////            diagfile2 << std::setw(20) << std::left << vr_enucmax;
+////            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
+////
+////            // close file
+////            diagfile2.close();
+////
+////            // diag_vel.out
+////            diagfile3.open(diagfilename3, std::ofstream::out |
+////                           std::ofstream::trunc | std::ofstream::binary);
+////            // write variable names
+////            diagfile3 << std::setw(20) << std::left << "time";
+////            diagfile3 << std::setw(20) << std::left << "max{U}";
+////            diagfile3 << std::setw(20) << std::left << "max{Mach}";
+////            diagfile3 << std::setw(20) << std::left << "tot kin energy";
+////            diagfile3 << std::setw(20) << std::left << "tot grav energy";
+////            diagfile3 << std::setw(20) << std::left << "tot int energy";
+////            diagfile3 << std::setw(20) << std::left << "velx_center";
+////            diagfile3 << std::setw(20) << std::left << "vely_center";
+////            diagfile3 << std::setw(20) << std::left << "velz_center";
+////            diagfile3 << std::setw(20) << std::left << "dt" << std::endl;
+////
+////            // write data
+////            diagfile3.precision(10);
+////            diagfile3 << std::scientific;
+////            diagfile3 << std::setw(20) << std::left << t_in;
+////            diagfile3 << std::setw(20) << std::left << U_max;
+////            diagfile3 << std::setw(20) << std::left << Mach_max;
+////            diagfile3 << std::setw(20) << std::left << kin_ener;
+////            diagfile3 << std::setw(20) << std::left << grav_ener;
+////            diagfile3 << std::setw(20) << std::left << int_ener;
+////            diagfile3 << std::setw(20) << std::left << vel_center[0];
+////            diagfile3 << std::setw(20) << std::left << vel_center[1];
+////            diagfile3 << std::setw(20) << std::left << vel_center[2];
+////            diagfile3 << std::setw(20) << std::left << dt << std::endl;
+////
+////            // close file
+////            diagfile3.close();
 
         } else {
+
+            Warning("test");
+            std::cout << numVarsDiag1;
 
             // store variable values in data array to be written later
 
@@ -562,30 +622,30 @@ return;
             diagfile1_data[index*11+9] = vr_Tmax;
             diagfile1_data[index*11+10] = T_center;
 
-            // enuc
-            diagfile2_data[index*11  ] = t_in;
-            diagfile2_data[index*11+1] = enuc_max;
-            diagfile2_data[index*11+2] = coord_enucmax[0];
-            diagfile2_data[index*11+3] = coord_enucmax[1];
-            diagfile2_data[index*11+4] = coord_enucmax[2];
-            diagfile2_data[index*11+5] = vel_enucmax[0];
-            diagfile2_data[index*11+6] = vel_enucmax[1];
-            diagfile2_data[index*11+7] = vel_enucmax[2];
-            diagfile2_data[index*11+8] = Rloc_enucmax;
-            diagfile2_data[index*11+9] = vr_enucmax;
-            diagfile2_data[index*11+10] = nuc_ener;
-
-            // vel
-            diagfile3_data[index*10  ] = t_in;
-            diagfile3_data[index*10+1] = U_max;
-            diagfile3_data[index*10+2] = Mach_max;
-            diagfile3_data[index*10+3] = kin_ener;
-            diagfile3_data[index*10+4] = grav_ener;
-            diagfile3_data[index*10+5] = int_ener;
-            diagfile3_data[index*10+6] = vel_center[0];
-            diagfile3_data[index*10+7] = vel_center[1];
-            diagfile3_data[index*10+8] = vel_center[2];
-            diagfile3_data[index*10+9] = dt;
+////            // enuc
+////            diagfile2_data[index*11  ] = t_in;
+////            diagfile2_data[index*11+1] = enuc_max;
+////            diagfile2_data[index*11+2] = coord_enucmax[0];
+////            diagfile2_data[index*11+3] = coord_enucmax[1];
+////            diagfile2_data[index*11+4] = coord_enucmax[2];
+////            diagfile2_data[index*11+5] = vel_enucmax[0];
+////            diagfile2_data[index*11+6] = vel_enucmax[1];
+////            diagfile2_data[index*11+7] = vel_enucmax[2];
+////            diagfile2_data[index*11+8] = Rloc_enucmax;
+////            diagfile2_data[index*11+9] = vr_enucmax;
+////            diagfile2_data[index*11+10] = nuc_ener;
+////
+////            // vel
+////            diagfile3_data[index*10  ] = t_in;
+////            diagfile3_data[index*10+1] = U_max;
+////            diagfile3_data[index*10+2] = Mach_max;
+////            diagfile3_data[index*10+3] = kin_ener;
+////            diagfile3_data[index*10+4] = grav_ener;
+////            diagfile3_data[index*10+5] = int_ener;
+////            diagfile3_data[index*10+6] = vel_center[0];
+////            diagfile3_data[index*10+7] = vel_center[1];
+////            diagfile3_data[index*10+8] = vel_center[2];
+////            diagfile3_data[index*10+9] = dt;
 
             index += 1;
         }
