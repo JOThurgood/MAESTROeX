@@ -3,7 +3,7 @@
 maestro.perturb_model = false
 
 maestro.ppm_type = 0
-maestro.max_step  = 1000
+maestro.max_step  = 1
 maestro.stop_time = 15e3
 maestro.max_dt = 100.0
 
@@ -20,7 +20,7 @@ maestro.hi_bc = 0 4 4
 geometry.is_periodic =  1 0 0
 
 # VERBOSITY
-maestro.v              = 1       # verbosity
+maestro.v              = 0       # verbosity
 
 # DEBUG FOR NAN
 amrex.fpe_trap_invalid = 1       # floating point exception
@@ -47,16 +47,16 @@ maestro.plot_deltat = 100e0  #0.1e0
 
 maestro.small_plot_base_name  = tmpsingle_level/sml    # root name of plot file
 
-# maestro.sum_interval = 1 # \int dv diagnostics. Not implemented for planar
-
 # Diag files
+maestro.sum_interval = 1 # \int dv diagnostics. Not implemented for planar
+maestro.diag_buf_size = 10
 
 # CHECKPOINT
 maestro.check_base_name = single_level/chk
 maestro.chk_int         = -1
 
 # ALGORITHMIC OPTIONS
-maestro.evolve_base_state = false
+maestro.evolve_base_state = true
 maestro.do_initial_projection = true
 maestro.init_divu_iter        = 1
 maestro.init_iter             = 1
