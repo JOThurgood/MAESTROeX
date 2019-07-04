@@ -397,8 +397,6 @@ Maestro::DiagFile (const int step,
         }
     }
 
-// short circut
-return;
 
     // compute the graviational potential energy too
     Real grav_ener=0.0;
@@ -417,19 +415,23 @@ return;
             nuc_ener *= *(dx+idim);
         }
 
-        // for a full star ncenter should be 8 -- there are only 8 zones
-        // that have a vertex at the center of the star.  For an octant,
-        // ncenter should be 1
-        if ( !((ncenter == 8 && !octant) ||
-               (ncenter == 1 && octant)) ) {
-            Abort("ERROR: ncenter invalid in Diag()");
-        } else {
-            T_center = T_center/ncenter;
-            for (int i=0; i<AMREX_SPACEDIM; ++i) {
-                vel_center[i] = vel_center[i]/ncenter;
-            }
+        if (spherical == 1) {
+          // for a full star ncenter should be 8 -- there are only 8 zones
+          // that have a vertex at the center of the star.  For an octant,
+          // ncenter should be 1
+          if ( !((ncenter == 8 && !octant) ||
+                 (ncenter == 1 && octant)) ) {
+              Abort("ERROR: ncenter invalid in Diag()");
+          } else {
+              T_center = T_center/ncenter;
+              for (int i=0; i<AMREX_SPACEDIM; ++i) {
+                  vel_center[i] = vel_center[i]/ncenter;
+              }
+          }
         }
     }
+// short circut
+return;
 
     // write out diagnosis data if at initialization
     if (ParallelDescriptor::IOProcessor()) {
