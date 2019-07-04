@@ -441,7 +441,7 @@ Maestro::DiagFile (const int step,
         std::ofstream diagfile3;
 
         // num of variables in the outfile depends on geometry but not dimension
-        const int ndiag1 = (spherical == 1) ? 8 : 11;
+        const int ndiag1 = (spherical == 1) ? 11 : 8;
   
 
         if (step == 0) {
@@ -531,6 +531,8 @@ Maestro::DiagFile (const int step,
               diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
               diagfile1 << std::setw(20) << std::left << vr_Tmax;
               diagfile1 << std::setw(20) << std::left << T_center << std::endl;
+            } else {
+              diagfile1 << std::endl;
             }
 
             // close files
@@ -677,8 +679,12 @@ Maestro::DiagFile (const int step,
 void
 Maestro::WriteDiagFile (int& index)
 {
-    // short circut
-    return;
+    // num of variables in the outfile depends on geometry but not dimension
+    const int ndiag1 = (spherical == 1) ? 11 : 8;
+
+//    Warning("Hi");
+//    std::cout << ndiag1;
+//    Warning("Hi");
 
     // timer for profiling
     BL_PROFILE_VAR("Maestro::WriteDiagFile()",WriteDiagFile);
@@ -700,9 +706,12 @@ Maestro::WriteDiagFile (int& index)
         diagfile1.precision(10);
         diagfile1 << std::scientific;
         for (int ii=0; ii<index; ++ii) {
-            for (int icomp=0; icomp<11; ++icomp) {
-                diagfile1 << std::setw(20) << std::left << diagfile1_data[ii*11+icomp];
+            //for (int icomp=0; icomp<11; ++icomp) {
+            for (int icomp=0; icomp<ndiag1; ++icomp) {
+                //diagfile1 << std::setw(20) << std::left << diagfile1_data[ii*11+icomp];
+                diagfile1 << std::setw(20) << std::left << diagfile1_data[ii*ndiag1+icomp];
             }
+            Warning("in the endline part");
             diagfile1 << std::endl;
         }
 
@@ -710,53 +719,53 @@ Maestro::WriteDiagFile (int& index)
         diagfile1.close();
 
 
-        const std::string& diagfilename2 = "diag_enuc.out";
-        std::ofstream diagfile2(diagfilename2, std::ofstream::out |
-                                std::ofstream::app | std::ofstream::binary);
-        // time
-        // enuc_max
-        // coord_enucmax (3)
-        // vel_enucmax (3)
-        // Rloc_enucmax
-        // vr_enucmax
-        // nuc_ener
-
-        diagfile2.precision(10);
-        diagfile2 << std::scientific;
-        for (int ii=0; ii<index; ++ii) {
-            for (int icomp=0; icomp<11; ++icomp) {
-                diagfile2 << std::setw(20) << std::left << diagfile2_data[ii*11+icomp];
-            }
-            diagfile2 << std::endl;
-        }
-
-        // close file
-        diagfile2.close();
-
-
-        const std::string& diagfilename3 = "diag_vel.out";
-        std::ofstream diagfile3(diagfilename3, std::ofstream::out |
-                                std::ofstream::app | std::ofstream::binary);
-        // time
-        // U_max
-        // Mach_max
-        // kin_ener
-        // grav_ener
-        // int_ener
-        // vel_center (3)
-        // dt
-
-        diagfile3.precision(10);
-        diagfile3 << std::scientific;
-        for (int ii=0; ii<index; ++ii) {
-            for (int icomp=0; icomp<10; ++icomp) {
-                diagfile3 << std::setw(20) << std::left << diagfile3_data[ii*10+icomp];
-            }
-            diagfile3 << std::endl;
-        }
-
-        // close file
-        diagfile3.close();
+//        const std::string& diagfilename2 = "diag_enuc.out";
+//        std::ofstream diagfile2(diagfilename2, std::ofstream::out |
+//                                std::ofstream::app | std::ofstream::binary);
+//        // time
+//        // enuc_max
+//        // coord_enucmax (3)
+//        // vel_enucmax (3)
+//        // Rloc_enucmax
+//        // vr_enucmax
+//        // nuc_ener
+//
+//        diagfile2.precision(10);
+//        diagfile2 << std::scientific;
+//        for (int ii=0; ii<index; ++ii) {
+//            for (int icomp=0; icomp<11; ++icomp) {
+//                diagfile2 << std::setw(20) << std::left << diagfile2_data[ii*11+icomp];
+//            }
+//            diagfile2 << std::endl;
+//        }
+//
+//        // close file
+//        diagfile2.close();
+//
+//
+//        const std::string& diagfilename3 = "diag_vel.out";
+//        std::ofstream diagfile3(diagfilename3, std::ofstream::out |
+//                                std::ofstream::app | std::ofstream::binary);
+//        // time
+//        // U_max
+//        // Mach_max
+//        // kin_ener
+//        // grav_ener
+//        // int_ener
+//        // vel_center (3)
+//        // dt
+//
+//        diagfile3.precision(10);
+//        diagfile3 << std::scientific;
+//        for (int ii=0; ii<index; ++ii) {
+//            for (int icomp=0; icomp<10; ++icomp) {
+//                diagfile3 << std::setw(20) << std::left << diagfile3_data[ii*10+icomp];
+//            }
+//            diagfile3 << std::endl;
+//        }
+//
+//        // close file
+//        diagfile3.close();
 
         // reset buffer array
         index = 0;
