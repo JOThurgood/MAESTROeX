@@ -212,8 +212,6 @@ Maestro::DiagFile (const int step,
         // find the largest U and Mach number over all processors
         ParallelDescriptor::ReduceRealMax(U_max_level);
         ParallelDescriptor::ReduceRealMax(Mach_max_level);
-// short circut
-return;
 
 
         // for T_max, we want to know where the hot spot is, so we do a
@@ -248,7 +246,8 @@ return;
         Vector<Real> T_max_coords(2*AMREX_SPACEDIM);
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             T_max_coords[i] = coord_Tmax_local[i];
-            T_max_coords[i+3] = vel_Tmax_local[i];
+//!            //T_max_coords[i+3] = vel_Tmax_local[i]; // !!!hardcoded assumption of dim=3
+            T_max_coords[i+AMREX_SPACEDIM] = vel_Tmax_local[i];
         }
 
         Vector<Real> T_max_coords_level(2*AMREX_SPACEDIM*nprocs);
@@ -267,7 +266,8 @@ return;
 
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             coord_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i];
-            vel_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i+3];
+//            vel_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i+3]; //magic num?
+            vel_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i+AMREX_SPACEDIM];
         }
 
         // for enuc_max, we also want to know where the hot spot is, so
@@ -293,7 +293,8 @@ return;
         Vector<Real> enuc_max_coords(2*AMREX_SPACEDIM);
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             enuc_max_coords[i] = coord_enucmax_local[i];
-            enuc_max_coords[i+3] = vel_enucmax_local[i];
+//            enuc_max_coords[i+3] = vel_enucmax_local[i]; // magic num
+            enuc_max_coords[i+AMREX_SPACEDIM] = vel_enucmax_local[i];
         }
 
         Vector<Real> enuc_max_coords_level(2*AMREX_SPACEDIM*nprocs);
@@ -305,6 +306,8 @@ return;
             ParallelDescriptor::Gather(&enuc_max_coords[0], 2*AMREX_SPACEDIM,
                                        &enuc_max_coords_level[0], 2*AMREX_SPACEDIM, ioproc);
         }
+// short circut
+return;
 
         // initialize global variables
         Vector<Real> coord_enucmax_level(AMREX_SPACEDIM);
