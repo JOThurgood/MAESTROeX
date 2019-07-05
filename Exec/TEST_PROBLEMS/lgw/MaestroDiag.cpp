@@ -60,9 +60,7 @@ Maestro::DiagFile (const int step,
 
         // compute rho_Hext and rho_Hnuc *was* here
 
-    } else {
-      // Dont to do need anything - already have w0, can just pass that to fortran and deal with it?      // might be more convinient to use a helper routine to get a cc version of w0 here?
-    }
+    } 
 
     // compute rho_Hext and rho_Hnuc
     // this was inside the above if (spherical==1) but I think its dim agnostic?
