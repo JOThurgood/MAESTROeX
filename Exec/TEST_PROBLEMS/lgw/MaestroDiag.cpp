@@ -443,6 +443,7 @@ Maestro::DiagFile (const int step,
         // num of variables in the outfile depends on geometry but not dimension
         const int ndiag1 = (spherical == 1) ? 11 : 8;
         const int ndiag2 = (spherical == 1) ? 11 : 9;
+        const int ndiag3 = (spherical == 1) ? 10 : 7;
   
 
         if (step == 0) {
@@ -647,18 +648,21 @@ Maestro::DiagFile (const int step,
             diagfile2_data[index*ndiag2+8] = Rloc_enucmax;
             diagfile2_data[index*ndiag2+9] = vr_enucmax;
             diagfile2_data[index*ndiag2+10] = nuc_ener;
-////
-////            // vel
-////            diagfile3_data[index*10  ] = t_in;
-////            diagfile3_data[index*10+1] = U_max;
-////            diagfile3_data[index*10+2] = Mach_max;
-////            diagfile3_data[index*10+3] = kin_ener;
-////            diagfile3_data[index*10+4] = grav_ener;
-////            diagfile3_data[index*10+5] = int_ener;
-////            diagfile3_data[index*10+6] = vel_center[0];
-////            diagfile3_data[index*10+7] = vel_center[1];
-////            diagfile3_data[index*10+8] = vel_center[2];
-////            diagfile3_data[index*10+9] = dt;
+
+            // vel
+            diagfile3_data[index*ndiag3  ] = t_in;
+            diagfile3_data[index*ndiag3+1] = U_max;
+            diagfile3_data[index*ndiag3+2] = Mach_max;
+            diagfile3_data[index*ndiag3+3] = kin_ener;
+            diagfile3_data[index*ndiag3+4] = grav_ener;
+            diagfile3_data[index*ndiag3+5] = int_ener;
+            if (spherical == 1) {
+              diagfile3_data[index*ndiag3+6] = vel_center[0];
+              diagfile3_data[index*ndiag3+7] = vel_center[1];
+              diagfile3_data[index*ndiag3+8] = vel_center[2];
+            }
+            const int idt = (spherical ==1) ? 9 : 6;
+            diagfile3_data[index*ndiag3+idt] = dt;
 
             index += 1;
         }
@@ -674,6 +678,7 @@ Maestro::WriteDiagFile (int& index)
     // num of variables in the outfile depends on geometry but not dimension
     const int ndiag1 = (spherical == 1) ? 11 : 8;
     const int ndiag2 = (spherical == 1) ? 11 : 9;
+    const int ndiag3 = (spherical == 1) ? 10 : 7;
 
 
     // timer for profiling
@@ -730,31 +735,31 @@ Maestro::WriteDiagFile (int& index)
 
         // close file
         diagfile2.close();
-//
-//
-//        const std::string& diagfilename3 = "diag_vel.out";
-//        std::ofstream diagfile3(diagfilename3, std::ofstream::out |
-//                                std::ofstream::app | std::ofstream::binary);
-//        // time
-//        // U_max
-//        // Mach_max
-//        // kin_ener
-//        // grav_ener
-//        // int_ener
-//        // vel_center (3)
-//        // dt
-//
-//        diagfile3.precision(10);
-//        diagfile3 << std::scientific;
-//        for (int ii=0; ii<index; ++ii) {
-//            for (int icomp=0; icomp<10; ++icomp) {
-//                diagfile3 << std::setw(20) << std::left << diagfile3_data[ii*10+icomp];
-//            }
-//            diagfile3 << std::endl;
-//        }
-//
-//        // close file
-//        diagfile3.close();
+
+
+        const std::string& diagfilename3 = "diag_vel.out";
+        std::ofstream diagfile3(diagfilename3, std::ofstream::out |
+                                std::ofstream::app | std::ofstream::binary);
+        // time
+        // U_max
+        // Mach_max
+        // kin_ener
+        // grav_ener
+        // int_ener
+        // vel_center (3)
+        // dt
+
+        diagfile3.precision(10);
+        diagfile3 << std::scientific;
+        for (int ii=0; ii<index; ++ii) {
+            for (int icomp=0; icomp<ndiag3; ++icomp) {
+                diagfile3 << std::setw(20) << std::left << diagfile3_data[ii*ndiag3+icomp];
+            }
+            diagfile3 << std::endl;
+        }
+
+        // close file
+        diagfile3.close();
 
         // reset buffer array
         index = 0;
