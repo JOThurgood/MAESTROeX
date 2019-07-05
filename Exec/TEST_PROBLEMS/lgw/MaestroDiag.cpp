@@ -128,13 +128,13 @@ Maestro::DiagFile (const int step,
         // get references to the MultiFabs at level lev
         const MultiFab& sin_mf = s_in[lev];
         const MultiFab& uin_mf = u_in[lev];
-        const MultiFab& w0macx_mf = w0mac[lev][0]; // spherical only
+        const MultiFab& w0macx_mf = w0mac[lev][0]; // spherical == 1 only
         const MultiFab& w0macy_mf = w0mac[lev][1]; // ^
         const MultiFab& w0macz_mf = w0mac[lev][2]; // ^
         const MultiFab& w0rcart_mf = w0r_cart[lev]; // ^
         const MultiFab& rho_Hnuc_mf = rho_Hnuc[lev];
         const MultiFab& rho_Hext_mf = rho_Hext[lev];
-        const MultiFab& normal_mf = normal[lev]; // spherical only?
+        const MultiFab& normal_mf = normal[lev]; // spherical ==1
         const Real* dx = geom[lev].CellSize();
 
         // create mask assuming refinement ratio = 2
@@ -246,7 +246,6 @@ Maestro::DiagFile (const int step,
         Vector<Real> T_max_coords(2*AMREX_SPACEDIM);
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             T_max_coords[i] = coord_Tmax_local[i];
-//!            //T_max_coords[i+3] = vel_Tmax_local[i]; // !!!hardcoded assumption of dim=3
             T_max_coords[i+AMREX_SPACEDIM] = vel_Tmax_local[i];
         }
 
@@ -266,7 +265,6 @@ Maestro::DiagFile (const int step,
 
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             coord_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i];
-//            vel_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i+3]; //magic num?
             vel_Tmax_level[i] = T_max_coords_level[2*AMREX_SPACEDIM*index_max+i+AMREX_SPACEDIM];
         }
 
@@ -293,7 +291,6 @@ Maestro::DiagFile (const int step,
         Vector<Real> enuc_max_coords(2*AMREX_SPACEDIM);
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             enuc_max_coords[i] = coord_enucmax_local[i];
-//            enuc_max_coords[i+3] = vel_enucmax_local[i]; // magic num
             enuc_max_coords[i+AMREX_SPACEDIM] = vel_enucmax_local[i];
         }
 
@@ -313,7 +310,6 @@ Maestro::DiagFile (const int step,
 
         for (int i=0; i<AMREX_SPACEDIM; ++i) {
             coord_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i];
-//            vel_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i+3]; // magic number
             vel_enucmax_level[i] = enuc_max_coords_level[2*AMREX_SPACEDIM*index_max+i+AMREX_SPACEDIM];
         }
 
