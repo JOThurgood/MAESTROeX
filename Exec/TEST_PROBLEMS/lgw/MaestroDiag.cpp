@@ -442,6 +442,7 @@ Maestro::DiagFile (const int step,
 
         // num of variables in the outfile depends on geometry but not dimension
         const int ndiag1 = (spherical == 1) ? 11 : 8;
+        const int ndiag2 = (spherical == 1) ? 11 : 9;
   
 
         if (step == 0) {
@@ -500,17 +501,17 @@ Maestro::DiagFile (const int step,
             diagfile1 << std::setw(20) << std::left << t_in;
             diagfile1 << std::setw(20) << std::left << T_max;
 
-            const Real coord2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
-            const Real coord3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
+            const Real coordT2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
+            const Real coordT3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
             diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << coord2;
-            diagfile1 << std::setw(20) << std::left << coord3;
+            diagfile1 << std::setw(20) << std::left << coordT2;
+            diagfile1 << std::setw(20) << std::left << coordT3;
 
-            const Real vel2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
-            const Real vel3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
+            const Real velT2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
+            const Real velT3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
             diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << vel2;
-            diagfile1 << std::setw(20) << std::left << vel3;
+            diagfile1 << std::setw(20) << std::left << velT2;
+            diagfile1 << std::setw(20) << std::left << velT3;
 
             if (spherical == 1) {
               diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
@@ -541,20 +542,29 @@ Maestro::DiagFile (const int step,
             }
             diagfile2 << std::setw(20) << std::left << "tot nuc ener(erg/s)" << std::endl;
 
-//            // write data
-//            diagfile2.precision(10);
-//            diagfile2 << std::scientific;
-//            diagfile2 << std::setw(20) << std::left << t_in;
-//            diagfile2 << std::setw(20) << std::left << enuc_max;
-//            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
-//            diagfile2 << std::setw(20) << std::left << coord_enucmax[1];
-//            diagfile2 << std::setw(20) << std::left << coord_enucmax[2];
-//            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
-//            diagfile2 << std::setw(20) << std::left << vel_enucmax[1];
-//            diagfile2 << std::setw(20) << std::left << vel_enucmax[2];
-//            diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
-//            diagfile2 << std::setw(20) << std::left << vr_enucmax;
-//            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
+            // write data
+            diagfile2.precision(10);
+            diagfile2 << std::scientific;
+            diagfile2 << std::setw(20) << std::left << t_in;
+            diagfile2 << std::setw(20) << std::left << enuc_max;
+
+            const Real coordenuc2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_enucmax[1];
+            const Real coordenuc3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_enucmax[2];
+            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
+            diagfile2 << std::setw(20) << std::left << coordenuc2;
+            diagfile2 << std::setw(20) << std::left << coordenuc3;
+
+            const Real velenuc2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_enucmax[1];
+            const Real velenuc3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_enucmax[2];
+            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
+            diagfile2 << std::setw(20) << std::left << velenuc2;
+            diagfile2 << std::setw(20) << std::left << velenuc3;
+
+            if (spherical == 1) {
+              diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
+              diagfile2 << std::setw(20) << std::left << vr_enucmax;
+            }
+            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
 
             // close file
             diagfile2.close();
@@ -598,37 +608,41 @@ Maestro::DiagFile (const int step,
             // temp
             diagfile1_data[index*ndiag1  ] = t_in;
             diagfile1_data[index*ndiag1+1] = T_max;
-            const Real coord2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
-            const Real coord3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
+            const Real coordT2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
+            const Real coordT3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
             diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
-            diagfile1_data[index*ndiag1+3] = coord2;
-            diagfile1_data[index*ndiag1+4] = coord3;
-            const Real vel2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
-            const Real vel3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
+            diagfile1_data[index*ndiag1+3] = coordT2;
+            diagfile1_data[index*ndiag1+4] = coordT3;
+            const Real velT2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
+            const Real velT3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
             diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
-            diagfile1_data[index*ndiag1+6] = vel2;
-            diagfile1_data[index*ndiag1+7] = vel3;
+            diagfile1_data[index*ndiag1+6] = velT2;
+            diagfile1_data[index*ndiag1+7] = velT3;
             diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << vel2;
-            diagfile1 << std::setw(20) << std::left << vel3;
+            diagfile1 << std::setw(20) << std::left << velT2;
+            diagfile1 << std::setw(20) << std::left << velT3;
             if (spherical == 1) {
               diagfile1_data[index*ndiag1+8] = Rloc_Tmax;
               diagfile1_data[index*ndiag1+9] = vr_Tmax;
               diagfile1_data[index*ndiag1+10] = T_center;
             }
 
-////            // enuc
-////            diagfile2_data[index*11  ] = t_in;
-////            diagfile2_data[index*11+1] = enuc_max;
-////            diagfile2_data[index*11+2] = coord_enucmax[0];
-////            diagfile2_data[index*11+3] = coord_enucmax[1];
-////            diagfile2_data[index*11+4] = coord_enucmax[2];
-////            diagfile2_data[index*11+5] = vel_enucmax[0];
-////            diagfile2_data[index*11+6] = vel_enucmax[1];
-////            diagfile2_data[index*11+7] = vel_enucmax[2];
-////            diagfile2_data[index*11+8] = Rloc_enucmax;
-////            diagfile2_data[index*11+9] = vr_enucmax;
-////            diagfile2_data[index*11+10] = nuc_ener;
+            // enuc
+            diagfile2_data[index*ndiag2  ] = t_in;
+            diagfile2_data[index*ndiag2+1] = enuc_max;
+            const Real coordenuc2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
+            const Real coordenuc3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
+            diagfile2_data[index*ndiag2+2] = coord_enucmax[0];
+            diagfile2_data[index*ndiag2+3] = coordenuc2;
+            diagfile2_data[index*ndiag2+4] = coordenuc3;
+            const Real velenuc2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_enucmax[1];
+            const Real velenuc3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_enucmax[2];
+            diagfile2_data[index*ndiag2+5] = vel_enucmax[0];
+            diagfile2_data[index*ndiag2+6] = velenuc2;
+            diagfile2_data[index*ndiag2+7] = velenuc3;
+            diagfile2_data[index*ndiag2+8] = Rloc_enucmax;
+            diagfile2_data[index*ndiag2+9] = vr_enucmax;
+            diagfile2_data[index*ndiag2+10] = nuc_ener;
 ////
 ////            // vel
 ////            diagfile3_data[index*10  ] = t_in;
@@ -655,10 +669,8 @@ Maestro::WriteDiagFile (int& index)
 {
     // num of variables in the outfile depends on geometry but not dimension
     const int ndiag1 = (spherical == 1) ? 11 : 8;
+    const int ndiag2 = (spherical == 1) ? 11 : 9;
 
-//    Warning("Hi");
-//    std::cout << ndiag1;
-//    Warning("Hi");
 
     // timer for profiling
     BL_PROFILE_VAR("Maestro::WriteDiagFile()",WriteDiagFile);
@@ -691,28 +703,29 @@ Maestro::WriteDiagFile (int& index)
         diagfile1.close();
 
 
-//        const std::string& diagfilename2 = "diag_enuc.out";
-//        std::ofstream diagfile2(diagfilename2, std::ofstream::out |
-//                                std::ofstream::app | std::ofstream::binary);
-//        // time
-//        // enuc_max
-//        // coord_enucmax (3)
-//        // vel_enucmax (3)
-//        // Rloc_enucmax
-//        // vr_enucmax
-//        // nuc_ener
-//
-//        diagfile2.precision(10);
-//        diagfile2 << std::scientific;
-//        for (int ii=0; ii<index; ++ii) {
-//            for (int icomp=0; icomp<11; ++icomp) {
-//                diagfile2 << std::setw(20) << std::left << diagfile2_data[ii*11+icomp];
-//            }
-//            diagfile2 << std::endl;
-//        }
-//
-//        // close file
-//        diagfile2.close();
+        const std::string& diagfilename2 = "diag_enuc.out";
+        std::ofstream diagfile2(diagfilename2, std::ofstream::out |
+                                std::ofstream::app | std::ofstream::binary);
+        // time
+        // enuc_max
+        // coord_enucmax (3)
+        // vel_enucmax (3)
+        // (if spherical):
+        // -- Rloc_enucmax
+        // -- vr_enucmax
+        // nuc_ener
+
+        diagfile2.precision(10);
+        diagfile2 << std::scientific;
+        for (int ii=0; ii<index; ++ii) {
+            for (int icomp=0; icomp<ndiag2; ++icomp) {
+                diagfile2 << std::setw(20) << std::left << diagfile2_data[ii*ndiag2+icomp];
+            }
+            diagfile2 << std::endl;
+        }
+
+        // close file
+        diagfile2.close();
 //
 //
 //        const std::string& diagfilename3 = "diag_vel.out";
