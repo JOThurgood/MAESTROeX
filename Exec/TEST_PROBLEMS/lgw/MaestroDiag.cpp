@@ -500,45 +500,17 @@ Maestro::DiagFile (const int step,
             diagfile1 << std::setw(20) << std::left << t_in;
             diagfile1 << std::setw(20) << std::left << T_max;
 
-            // switch replacement
             const Real coord2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
             const Real coord3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
             diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
             diagfile1 << std::setw(20) << std::left << coord2;
             diagfile1 << std::setw(20) << std::left << coord3;
+
             const Real vel2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
             const Real vel3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
             diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
             diagfile1 << std::setw(20) << std::left << vel2;
             diagfile1 << std::setw(20) << std::left << vel3;
-
-//            // delete this
-//            switch(AMREX_SPACEDIM){
-//              case 1:
-//                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-//                diagfile1 << std::setw(20) << std::left << 0.0;
-//                diagfile1 << std::setw(20) << std::left << 0.0;
-//                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-//                diagfile1 << std::setw(20) << std::left << 0.0;
-//                diagfile1 << std::setw(20) << std::left << 0.0;
-//                break;
-//              case 2:
-//                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-//                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
-//                diagfile1 << std::setw(20) << std::left << 0.0;
-//                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-//                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
-//                diagfile1 << std::setw(20) << std::left << 0.0;
-//                break;
-//              case 3:
-//                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-//                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
-//                diagfile1 << std::setw(20) << std::left << coord_Tmax[2];
-//                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-//                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
-//                diagfile1 << std::setw(20) << std::left << vel_Tmax[2];
-//                break;
-//            }
 
             if (spherical == 1) {
               diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
@@ -639,32 +611,6 @@ Maestro::DiagFile (const int step,
             diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
             diagfile1 << std::setw(20) << std::left << vel2;
             diagfile1 << std::setw(20) << std::left << vel3;
-//            switch(AMREX_SPACEDIM){
-//              case 1:
-//                diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
-//                diagfile1_data[index*ndiag1+3] = 0.0;
-//                diagfile1_data[index*ndiag1+4] = 0.0;
-//                diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
-//                diagfile1_data[index*ndiag1+6] = 0.0;
-//                diagfile1_data[index*ndiag1+7] = 0.0;
-//                break;
-//              case 2:
-//                diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
-//                diagfile1_data[index*ndiag1+3] = coord_Tmax[1];
-//                diagfile1_data[index*ndiag1+4] = 0.0;
-//                diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
-//                diagfile1_data[index*ndiag1+6] = vel_Tmax[1];
-//                diagfile1_data[index*ndiag1+7] = 0.0;
-//                break;
-//              case 3:
-//                diagfile1_data[index*ndiag1+2] = coord_Tmax[0];
-//                diagfile1_data[index*ndiag1+3] = coord_Tmax[1];
-//                diagfile1_data[index*ndiag1+4] = coord_Tmax[2];
-//                diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
-//                diagfile1_data[index*ndiag1+6] = vel_Tmax[1];
-//                diagfile1_data[index*ndiag1+7] = vel_Tmax[2];
-//                break;
-//            }
             if (spherical == 1) {
               diagfile1_data[index*ndiag1+8] = Rloc_Tmax;
               diagfile1_data[index*ndiag1+9] = vr_Tmax;
