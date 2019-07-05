@@ -569,21 +569,23 @@ Maestro::DiagFile (const int step,
             // close file
             diagfile2.close();
 
-////            // diag_vel.out
-////            diagfile3.open(diagfilename3, std::ofstream::out |
-////                           std::ofstream::trunc | std::ofstream::binary);
-////            // write variable names
-////            diagfile3 << std::setw(20) << std::left << "time";
-////            diagfile3 << std::setw(20) << std::left << "max{U}";
-////            diagfile3 << std::setw(20) << std::left << "max{Mach}";
-////            diagfile3 << std::setw(20) << std::left << "tot kin energy";
-////            diagfile3 << std::setw(20) << std::left << "tot grav energy";
-////            diagfile3 << std::setw(20) << std::left << "tot int energy";
-////            diagfile3 << std::setw(20) << std::left << "velx_center";
-////            diagfile3 << std::setw(20) << std::left << "vely_center";
-////            diagfile3 << std::setw(20) << std::left << "velz_center";
-////            diagfile3 << std::setw(20) << std::left << "dt" << std::endl;
-////
+            // diag_vel.out
+            diagfile3.open(diagfilename3, std::ofstream::out |
+                           std::ofstream::trunc | std::ofstream::binary);
+            // write variable names
+            diagfile3 << std::setw(20) << std::left << "time";
+            diagfile3 << std::setw(20) << std::left << "max{U}";
+            diagfile3 << std::setw(20) << std::left << "max{Mach}";
+            diagfile3 << std::setw(20) << std::left << "tot kin energy";
+            diagfile3 << std::setw(20) << std::left << "tot grav energy";
+            diagfile3 << std::setw(20) << std::left << "tot int energy";
+            if (spherical == 1) {
+              diagfile3 << std::setw(20) << std::left << "velx_center";
+              diagfile3 << std::setw(20) << std::left << "vely_center";
+              diagfile3 << std::setw(20) << std::left << "velz_center";
+            }
+            diagfile3 << std::setw(20) << std::left << "dt" << std::endl;
+
 ////            // write data
 ////            diagfile3.precision(10);
 ////            diagfile3 << std::scientific;
@@ -598,8 +600,8 @@ Maestro::DiagFile (const int step,
 ////            diagfile3 << std::setw(20) << std::left << vel_center[2];
 ////            diagfile3 << std::setw(20) << std::left << dt << std::endl;
 ////
-////            // close file
-////            diagfile3.close();
+            // close file
+            diagfile3.close();
 
         } else {
 
