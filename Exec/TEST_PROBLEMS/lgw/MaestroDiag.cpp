@@ -500,32 +500,45 @@ Maestro::DiagFile (const int step,
             diagfile1 << std::setw(20) << std::left << t_in;
             diagfile1 << std::setw(20) << std::left << T_max;
 
-            switch(AMREX_SPACEDIM){
-              case 1:
-                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-                diagfile1 << std::setw(20) << std::left << 0.0;
-                diagfile1 << std::setw(20) << std::left << 0.0;
-                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-                diagfile1 << std::setw(20) << std::left << 0.0;
-                diagfile1 << std::setw(20) << std::left << 0.0;
-                break;
-              case 2:
-                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
-                diagfile1 << std::setw(20) << std::left << 0.0;
-                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
-                diagfile1 << std::setw(20) << std::left << 0.0;
-                break;
-              case 3:
-                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
-                diagfile1 << std::setw(20) << std::left << coord_Tmax[2];
-                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
-                diagfile1 << std::setw(20) << std::left << vel_Tmax[2];
-                break;
-            }
+            // switch replacement
+            const Real coord2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
+            const Real coord3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
+            diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+            diagfile1 << std::setw(20) << std::left << coord2;
+            diagfile1 << std::setw(20) << std::left << coord3;
+            const Real vel2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
+            const Real vel3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
+            diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+            diagfile1 << std::setw(20) << std::left << vel2;
+            diagfile1 << std::setw(20) << std::left << vel3;
+
+//            // delete this
+//            switch(AMREX_SPACEDIM){
+//              case 1:
+//                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+//                diagfile1 << std::setw(20) << std::left << 0.0;
+//                diagfile1 << std::setw(20) << std::left << 0.0;
+//                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+//                diagfile1 << std::setw(20) << std::left << 0.0;
+//                diagfile1 << std::setw(20) << std::left << 0.0;
+//                break;
+//              case 2:
+//                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+//                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
+//                diagfile1 << std::setw(20) << std::left << 0.0;
+//                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+//                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
+//                diagfile1 << std::setw(20) << std::left << 0.0;
+//                break;
+//              case 3:
+//                diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
+//                diagfile1 << std::setw(20) << std::left << coord_Tmax[1];
+//                diagfile1 << std::setw(20) << std::left << coord_Tmax[2];
+//                diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
+//                diagfile1 << std::setw(20) << std::left << vel_Tmax[1];
+//                diagfile1 << std::setw(20) << std::left << vel_Tmax[2];
+//                break;
+//            }
 
             if (spherical == 1) {
               diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
@@ -538,40 +551,42 @@ Maestro::DiagFile (const int step,
             // close files
             diagfile1.close();
 
-////            // diag_enuc.out
-////            diagfile2.open(diagfilename2, std::ofstream::out |
-////                           std::ofstream::trunc | std::ofstream::binary);
-////            // write variable names
-////            diagfile2 << std::setw(20) << std::left << "time";
-////            diagfile2 << std::setw(20) << std::left << "max{enuc}";
-////            diagfile2 << std::setw(20) << std::left << "x(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "y(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "z(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "vx(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "vy(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "vz(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "R(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "vr(max{enuc})";
-////            diagfile2 << std::setw(20) << std::left << "tot nuc ener(erg/s)" << std::endl;
-////
-////            // write data
-////            diagfile2.precision(10);
-////            diagfile2 << std::scientific;
-////            diagfile2 << std::setw(20) << std::left << t_in;
-////            diagfile2 << std::setw(20) << std::left << enuc_max;
-////            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
-////            diagfile2 << std::setw(20) << std::left << coord_enucmax[1];
-////            diagfile2 << std::setw(20) << std::left << coord_enucmax[2];
-////            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
-////            diagfile2 << std::setw(20) << std::left << vel_enucmax[1];
-////            diagfile2 << std::setw(20) << std::left << vel_enucmax[2];
-////            diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
-////            diagfile2 << std::setw(20) << std::left << vr_enucmax;
-////            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
-////
-////            // close file
-////            diagfile2.close();
-////
+            // diag_enuc.out
+            diagfile2.open(diagfilename2, std::ofstream::out |
+                           std::ofstream::trunc | std::ofstream::binary);
+            // write variable names
+            diagfile2 << std::setw(20) << std::left << "time";
+            diagfile2 << std::setw(20) << std::left << "max{enuc}";
+            diagfile2 << std::setw(20) << std::left << "x(max{enuc})";
+            diagfile2 << std::setw(20) << std::left << "y(max{enuc})";
+            diagfile2 << std::setw(20) << std::left << "z(max{enuc})";
+            diagfile2 << std::setw(20) << std::left << "vx(max{enuc})";
+            diagfile2 << std::setw(20) << std::left << "vy(max{enuc})";
+            diagfile2 << std::setw(20) << std::left << "vz(max{enuc})";
+            if (spherical == 1) {
+              diagfile2 << std::setw(20) << std::left << "R(max{enuc})";
+              diagfile2 << std::setw(20) << std::left << "vr(max{enuc})";
+            }
+            diagfile2 << std::setw(20) << std::left << "tot nuc ener(erg/s)" << std::endl;
+
+//            // write data
+//            diagfile2.precision(10);
+//            diagfile2 << std::scientific;
+//            diagfile2 << std::setw(20) << std::left << t_in;
+//            diagfile2 << std::setw(20) << std::left << enuc_max;
+//            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
+//            diagfile2 << std::setw(20) << std::left << coord_enucmax[1];
+//            diagfile2 << std::setw(20) << std::left << coord_enucmax[2];
+//            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
+//            diagfile2 << std::setw(20) << std::left << vel_enucmax[1];
+//            diagfile2 << std::setw(20) << std::left << vel_enucmax[2];
+//            diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
+//            diagfile2 << std::setw(20) << std::left << vr_enucmax;
+//            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
+
+            // close file
+            diagfile2.close();
+
 ////            // diag_vel.out
 ////            diagfile3.open(diagfilename3, std::ofstream::out |
 ////                           std::ofstream::trunc | std::ofstream::binary);
