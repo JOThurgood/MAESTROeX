@@ -448,32 +448,6 @@ Maestro::DiagFile (const int step,
 
         if (step == 0) {
 
-/// could also use switches like so
-//            switch(AMREX_SPACEDIM){
-//              case 1:
-//                Warning("switch");
-//                std::cout<<AMREX_SPACEDIM<<std::endl;
-//                break;
-//              case 2:
-//                Warning("switch");
-//                std::cout<<AMREX_SPACEDIM<<std::endl;
-//                break;
-//              case 3:
-//                Warning("switch");
-//                std::cout<<AMREX_SPACEDIM<<std::endl;
-//                break;
-//            }
-//  could do this to dynamically change the headers but i think its over egging it
-//  maybe just set vz = 0 all the time if its 2d
-///            std::string strStart = "xyz";
-///            std::string strEnd   = "(max{T})";
-///            std::string strIO;
-///            for (int idim=0; idim<AMREX_SPACEDIM; ++idim) {
-///              strIO = strStart[idim] + strEnd;
-///              //std::cout<< "STRING" << xyzStr[idim] << std::endl;
-///              std::cout<< strIO << std::endl;
-///            }
-
             // create file after initialization
             diagfile1.open(diagfilename1, std::ofstream::out |
                            std::ofstream::trunc | std::ofstream::binary);
@@ -746,7 +720,7 @@ Maestro::WriteDiagFile (int& index)
         // kin_ener
         // grav_ener
         // int_ener
-        // vel_center (3)
+        // vel_center (3) (only if spherical)
         // dt
 
         diagfile3.precision(10);
