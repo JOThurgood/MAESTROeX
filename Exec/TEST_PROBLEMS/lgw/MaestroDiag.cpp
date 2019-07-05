@@ -586,20 +586,22 @@ Maestro::DiagFile (const int step,
             }
             diagfile3 << std::setw(20) << std::left << "dt" << std::endl;
 
-////            // write data
-////            diagfile3.precision(10);
-////            diagfile3 << std::scientific;
-////            diagfile3 << std::setw(20) << std::left << t_in;
-////            diagfile3 << std::setw(20) << std::left << U_max;
-////            diagfile3 << std::setw(20) << std::left << Mach_max;
-////            diagfile3 << std::setw(20) << std::left << kin_ener;
-////            diagfile3 << std::setw(20) << std::left << grav_ener;
-////            diagfile3 << std::setw(20) << std::left << int_ener;
-////            diagfile3 << std::setw(20) << std::left << vel_center[0];
-////            diagfile3 << std::setw(20) << std::left << vel_center[1];
-////            diagfile3 << std::setw(20) << std::left << vel_center[2];
-////            diagfile3 << std::setw(20) << std::left << dt << std::endl;
-////
+            // write data
+            diagfile3.precision(10);
+            diagfile3 << std::scientific;
+            diagfile3 << std::setw(20) << std::left << t_in;
+            diagfile3 << std::setw(20) << std::left << U_max;
+            diagfile3 << std::setw(20) << std::left << Mach_max;
+            diagfile3 << std::setw(20) << std::left << kin_ener;
+            diagfile3 << std::setw(20) << std::left << grav_ener;
+            diagfile3 << std::setw(20) << std::left << int_ener;
+            if (spherical == 1) {
+              diagfile3 << std::setw(20) << std::left << vel_center[0];
+              diagfile3 << std::setw(20) << std::left << vel_center[1];
+              diagfile3 << std::setw(20) << std::left << vel_center[2];
+            }
+            diagfile3 << std::setw(20) << std::left << dt << std::endl;
+
             // close file
             diagfile3.close();
 
