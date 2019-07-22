@@ -250,6 +250,8 @@ contains
                 if ( (mask(i,j,k).eq.1) ) cell_valid = .false.
              end if
 
+             ! might also want a check of if in the damping zone here? (see diag_sphr)
+
              if (cell_valid) then
 
                 ! vel is the magnitude of the velocity, including w0
@@ -447,6 +449,19 @@ contains
     enddo
 
   end subroutine diag_sphr
+
+  subroutine diag_grav_energy_new(grav_ener, rho0, &
+                               r_cc_loc, r_edge_loc) &
+       bind(C, name="diag_grav_energy_new")
+
+    double precision, intent(inout) :: grav_ener
+    double precision, intent(in   ) :: rho0(0:max_radial_level,0:nr_fine-1)
+    double precision, intent(in   ) :: r_cc_loc(0:max_radial_level,0:nr_fine-1)
+    double precision, intent(in   ) :: r_edge_loc(0:max_radial_level,0:nr_fine)
+
+    print *, ' diag_ge_new says hi'
+
+  end subroutine diag_grav_energy_new
 
   subroutine diag_grav_energy(grav_ener, rho0, &
                                r_cc_loc, r_edge_loc) &

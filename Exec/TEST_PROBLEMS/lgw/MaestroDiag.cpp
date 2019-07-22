@@ -394,8 +394,11 @@ Maestro::DiagFile (const int step,
     // DOES THIS NEED MODIFIED FOR PLANAR?!?
     // compute the graviational potential energy too
     Real grav_ener=0.0;
-    diag_grav_energy(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
-
+    if (spherical == 1) {
+      diag_grav_energy(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
+    } else {
+      diag_grav_energy_new(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
+    }
     // normalize
     if (ParallelDescriptor::IOProcessor()) {
 

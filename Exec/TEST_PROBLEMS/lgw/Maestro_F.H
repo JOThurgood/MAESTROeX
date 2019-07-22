@@ -263,6 +263,10 @@ extern "C"
     void diag_grav_energy(amrex::Real* grav_ener,
 			  const amrex::Real* rho0,
                           const amrex::Real* r_cc_loc, const amrex::Real* r_edge_loc);
+
+    void diag_grav_energy_new(amrex::Real* grav_ener,
+			  const amrex::Real* rho0,
+                          const amrex::Real* r_cc_loc, const amrex::Real* r_edge_loc);
     //////////////////////
 
     //////////////////////
