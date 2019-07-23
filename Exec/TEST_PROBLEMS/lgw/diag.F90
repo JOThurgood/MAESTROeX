@@ -26,7 +26,8 @@
 module diag_module
 
   use meth_params_module, only: rho_comp, spec_comp, temp_comp, prob_lo, &
-       sponge_start_factor, sponge_center_density, base_cutoff_density
+       sponge_start_factor, sponge_center_density, base_cutoff_density, &
+       grav_const
   use network, only: nspec
   use base_state_geometry_module, only:  max_radial_level, nr_fine, center
   use eos_module
@@ -459,7 +460,32 @@ contains
     double precision, intent(in   ) :: r_cc_loc(0:max_radial_level,0:nr_fine-1)
     double precision, intent(in   ) :: r_edge_loc(0:max_radial_level,0:nr_fine)
 
-    print *, ' diag_ge_new says hi'
+    ! local variables
+
+    integer :: r
+    double precision :: dr
+
+!    ! First attempt - gets close but there is some error
+!    dr = r_edge_loc(0,1)-r_edge_loc(0,0) ! dr first cell 
+!    ! initialise grav ener in first cell
+!    grav_ener = - grav_const * dr/4.0d0  * rho0(0,0) * r_cc_loc(0,0) !/4 is correct here
+!    do r=1,nr_fine-1
+!      dr = r_edge_loc(0,r+1)-r_edge_loc(0,r) 
+!      grav_ener = grav_ener - grav_const * dr / 2.0 * &
+!                  (rho0(0,r)*r_cc_loc(0,r) + rho0(0,r-1) * r_cc_loc(0,r-1))
+!    enddo
+
+    ! This is simpler and seems closer to what I expect (agrees to about 1/10,000)
+    ! Since its a FV code maybe this is what should be used, anyway.
+    ! Just add up all the energy at the points, multiply by the cell vol.
+    grav_ener = ZERO
+    do r=0,nr_fine-1
+      dr = r_edge_loc(0,r+1)-r_edge_loc(0,r) 
+      grav_ener = grav_ener - rho0(0,r) * r_cc_loc(0,r) * grav_const * dr
+    enddo
+
+    ! remember to multiply by the x length (always) and y length (if 3D) in C++
+    ! for the normalisation
 
   end subroutine diag_grav_energy_new
 

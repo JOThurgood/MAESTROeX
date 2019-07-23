@@ -399,6 +399,7 @@ Maestro::DiagFile (const int step,
     } else {
       diag_grav_energy_new(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
     }
+
     // normalize
     if (ParallelDescriptor::IOProcessor()) {
 
