@@ -337,9 +337,9 @@ contains
 
   end subroutine diag_sphr
 
-  subroutine diag_grav_energy_new(grav_ener, rho0, &
+  subroutine diag_grav_energy(grav_ener, rho0, &
                                r_cc_loc, r_edge_loc) &
-       bind(C, name="diag_grav_energy_new")
+       bind(C, name="diag_grav_energy")
 
     double precision, intent(inout) :: grav_ener
     double precision, intent(in   ) :: rho0(0:max_radial_level,0:nr_fine-1)
@@ -373,8 +373,7 @@ contains
     ! remember to multiply by the x length (always) and y length (if 3D) in C++
     ! for the normalisation
 
-  end subroutine diag_grav_energy_new
-
+  end subroutine diag_grav_energy
   subroutine diag_grav_energy_sphr(grav_ener, rho0, &
                                r_cc_loc, r_edge_loc) &
        bind(C, name="diag_grav_energy_sphr")

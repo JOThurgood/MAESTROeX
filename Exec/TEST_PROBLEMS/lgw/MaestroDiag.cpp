@@ -394,7 +394,7 @@ Maestro::DiagFile (const int step,
     if (spherical == 1) {
       diag_grav_energy_sphr(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
     } else {
-      diag_grav_energy_new(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
+      diag_grav_energy(&grav_ener, rho0_in.dataPtr(), r_cc_loc.dataPtr(), r_edge_loc.dataPtr());
     }
 
     // normalize
