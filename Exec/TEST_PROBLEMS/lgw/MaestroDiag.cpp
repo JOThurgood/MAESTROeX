@@ -181,8 +181,7 @@ Maestro::DiagFile (const int step,
                         &ncenter_level, &T_center_level, vel_center_level.dataPtr(),
                         BL_TO_FORTRAN_3D(mask[mfi]), &use_mask);
             } else {
-
-              testdiag(&lev, ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
+              diag(&lev, ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
                         BL_TO_FORTRAN_FAB(sin_mf[mfi]),
                         BL_TO_FORTRAN_3D(rho_Hnuc_mf[mfi]),
                         BL_TO_FORTRAN_3D(rho_Hext_mf[mfi]),
@@ -194,14 +193,9 @@ Maestro::DiagFile (const int step,
                         &kin_ener_level, &int_ener_level, &nuc_ener_level,
                         &U_max_level, &Mach_max_level,
                         BL_TO_FORTRAN_3D(mask[mfi]), &use_mask);
-
              }
 
-            // delete this
-            Warning("hi from MaestriDiag");
-            std::cout << U_max_level << std::endl;
-
-        } // end for MFIter
+        } // end MFIter
 
         // sum quantities over all processors
         ParallelDescriptor::ReduceRealSum(T_center_level);

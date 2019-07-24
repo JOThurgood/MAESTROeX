@@ -41,7 +41,7 @@ module diag_module
 
 contains
 
-  subroutine testdiag(lev, lo, hi, &
+  subroutine diag(lev, lo, hi, &
                        scal, s_lo, s_hi, nc_s, &
                        rho_Hnuc, hn_lo, hn_hi, &
                        rho_Hext, he_lo, he_hi, &
@@ -52,7 +52,7 @@ contains
                        kin_ener, int_ener, nuc_ener, &
                        U_max, Mach_max, &
                        mask,     m_lo, m_hi, use_mask) &
-                       bind(C, name="testdiag")
+                       bind(C, name="diag")
 
     integer         , intent(in   ) :: lev, lo(3), hi(3)
     integer         , intent(in   ) :: s_lo(3), s_hi(3), nc_s
@@ -176,7 +176,7 @@ contains
       enddo
     enddo
     
-  end subroutine testdiag
+  end subroutine diag
 
   subroutine diag_sphr(lev, lo, hi, &
                        scal, s_lo, s_hi, nc_s, &
