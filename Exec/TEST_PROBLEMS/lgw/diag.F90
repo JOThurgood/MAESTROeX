@@ -41,11 +41,6 @@ module diag_module
 
 contains
 
-!!!!  subroutine testdiag(w0) bind(C, name="testdiag")
-!!!!    double precision, intent(in   ) :: w0(0:max_radial_level,0:nr_fine)
-!!!!    print *, 'hi from testdiag'
-!!!!    print *,w0
-!!!!  end subroutine diag_sphr
   subroutine testdiag(lev, lo, hi, &
                        scal, s_lo, s_hi, nc_s, &
                        rho_Hnuc, hn_lo, hn_hi, &
@@ -86,8 +81,6 @@ contains
     logical            :: cell_valid
 
     type (eos_t) :: eos_state
-
-    print *, 'Hi from testdiag'
 
     ! weight is the factor by which the volume of a cell at the current level
     ! relates to the volume of a cell at the coarsest level of refinement.
@@ -183,8 +176,6 @@ contains
       enddo
     enddo
     
-    print *, 'goodbye from testdiag'
-
   end subroutine testdiag
 
   !xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
