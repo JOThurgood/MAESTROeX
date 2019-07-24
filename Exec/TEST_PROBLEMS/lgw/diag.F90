@@ -375,9 +375,9 @@ contains
 
   end subroutine diag_grav_energy_new
 
-  subroutine diag_grav_energy(grav_ener, rho0, &
+  subroutine diag_grav_energy_sphr(grav_ener, rho0, &
                                r_cc_loc, r_edge_loc) &
-       bind(C, name="diag_grav_energy")
+       bind(C, name="diag_grav_energy_sphr")
 
     double precision, intent(inout) :: grav_ener
     double precision, intent(in   ) :: rho0(0:max_radial_level,0:nr_fine-1)
@@ -435,6 +435,6 @@ contains
 
     enddo
 
-  end subroutine diag_grav_energy
+  end subroutine diag_grav_energy_sphr
 
 end module diag_module
