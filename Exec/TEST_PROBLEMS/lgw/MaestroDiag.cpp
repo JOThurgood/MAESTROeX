@@ -449,44 +449,44 @@ Maestro::DiagFile (const int step,
 
             // diag_temp.out
             // write variable names
-            diagfile1 << std::setw(20) << std::left << "time";
-            diagfile1 << std::setw(20) << std::left << "max{T}";
-            diagfile1 << std::setw(20) << std::left << "x(max{T})";
-            diagfile1 << std::setw(20) << std::left << "y(max{T})";
-            diagfile1 << std::setw(20) << std::left << "z(max{T})";
-            diagfile1 << std::setw(20) << std::left << "vx(max{T})";
-            diagfile1 << std::setw(20) << std::left << "vy(max{T})";
-            diagfile1 << std::setw(20) << std::left << "vz(max{T})";
+            diagfile1 << std::setw(setwVal) << std::left << "time";
+            diagfile1 << std::setw(setwVal) << std::left << "max{T}";
+            diagfile1 << std::setw(setwVal) << std::left << "x(max{T})";
+            diagfile1 << std::setw(setwVal) << std::left << "y(max{T})";
+            diagfile1 << std::setw(setwVal) << std::left << "z(max{T})";
+            diagfile1 << std::setw(setwVal) << std::left << "vx(max{T})";
+            diagfile1 << std::setw(setwVal) << std::left << "vy(max{T})";
+            diagfile1 << std::setw(setwVal) << std::left << "vz(max{T})";
             if (spherical == 1) {
-              diagfile1 << std::setw(20) << std::left << "R(max{T})";
-              diagfile1 << std::setw(20) << std::left << "vr(max{T})";
-              diagfile1 << std::setw(20) << std::left << "T_center" << std::endl;
+              diagfile1 << std::setw(setwVal) << std::left << "R(max{T})";
+              diagfile1 << std::setw(setwVal) << std::left << "vr(max{T})";
+              diagfile1 << std::setw(setwVal) << std::left << "T_center" << std::endl;
             } else {
               diagfile1 << std::endl;
             }
 
             // write data
-            diagfile1.precision(10);
+            diagfile1.precision(outfilePrecision);
             diagfile1 << std::scientific;
-            diagfile1 << std::setw(20) << std::left << t_in;
-            diagfile1 << std::setw(20) << std::left << T_max;
+            diagfile1 << std::setw(setwVal) << std::left << t_in;
+            diagfile1 << std::setw(setwVal) << std::left << T_max;
 
             const Real coordT2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_Tmax[1];
             const Real coordT3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_Tmax[2];
-            diagfile1 << std::setw(20) << std::left << coord_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << coordT2;
-            diagfile1 << std::setw(20) << std::left << coordT3;
+            diagfile1 << std::setw(setwVal) << std::left << coord_Tmax[0];
+            diagfile1 << std::setw(setwVal) << std::left << coordT2;
+            diagfile1 << std::setw(setwVal) << std::left << coordT3;
 
             const Real velT2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_Tmax[1];
             const Real velT3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_Tmax[2];
-            diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << velT2;
-            diagfile1 << std::setw(20) << std::left << velT3;
+            diagfile1 << std::setw(setwVal) << std::left << vel_Tmax[0];
+            diagfile1 << std::setw(setwVal) << std::left << velT2;
+            diagfile1 << std::setw(setwVal) << std::left << velT3;
 
             if (spherical == 1) {
-              diagfile1 << std::setw(20) << std::left << Rloc_Tmax;
-              diagfile1 << std::setw(20) << std::left << vr_Tmax;
-              diagfile1 << std::setw(20) << std::left << T_center << std::endl;
+              diagfile1 << std::setw(setwVal) << std::left << Rloc_Tmax;
+              diagfile1 << std::setw(setwVal) << std::left << vr_Tmax;
+              diagfile1 << std::setw(setwVal) << std::left << T_center << std::endl;
             } else {
               diagfile1 << std::endl;
             }
@@ -498,43 +498,43 @@ Maestro::DiagFile (const int step,
             diagfile2.open(diagfilename2, std::ofstream::out |
                            std::ofstream::trunc | std::ofstream::binary);
             // write variable names
-            diagfile2 << std::setw(20) << std::left << "time";
-            diagfile2 << std::setw(20) << std::left << "max{enuc}";
-            diagfile2 << std::setw(20) << std::left << "x(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "y(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "z(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vx(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vy(max{enuc})";
-            diagfile2 << std::setw(20) << std::left << "vz(max{enuc})";
+            diagfile2 << std::setw(setwVal) << std::left << "time";
+            diagfile2 << std::setw(setwVal) << std::left << "max{enuc}";
+            diagfile2 << std::setw(setwVal) << std::left << "x(max{enuc})";
+            diagfile2 << std::setw(setwVal) << std::left << "y(max{enuc})";
+            diagfile2 << std::setw(setwVal) << std::left << "z(max{enuc})";
+            diagfile2 << std::setw(setwVal) << std::left << "vx(max{enuc})";
+            diagfile2 << std::setw(setwVal) << std::left << "vy(max{enuc})";
+            diagfile2 << std::setw(setwVal) << std::left << "vz(max{enuc})";
             if (spherical == 1) {
-              diagfile2 << std::setw(20) << std::left << "R(max{enuc})";
-              diagfile2 << std::setw(20) << std::left << "vr(max{enuc})";
+              diagfile2 << std::setw(setwVal) << std::left << "R(max{enuc})";
+              diagfile2 << std::setw(setwVal) << std::left << "vr(max{enuc})";
             }
-            diagfile2 << std::setw(20) << std::left << "tot nuc ener(erg/s)" << std::endl;
+            diagfile2 << std::setw(setwVal) << std::left << "tot nuc ener(erg/s)" << std::endl;
 
             // write data
-            diagfile2.precision(10);
+            diagfile2.precision(outfilePrecision);
             diagfile2 << std::scientific;
-            diagfile2 << std::setw(20) << std::left << t_in;
-            diagfile2 << std::setw(20) << std::left << enuc_max;
+            diagfile2 << std::setw(setwVal) << std::left << t_in;
+            diagfile2 << std::setw(setwVal) << std::left << enuc_max;
 
             const Real coordenuc2 = (AMREX_SPACEDIM <2) ? 0.0 : coord_enucmax[1];
             const Real coordenuc3 = (AMREX_SPACEDIM <3) ? 0.0 : coord_enucmax[2];
-            diagfile2 << std::setw(20) << std::left << coord_enucmax[0];
-            diagfile2 << std::setw(20) << std::left << coordenuc2;
-            diagfile2 << std::setw(20) << std::left << coordenuc3;
+            diagfile2 << std::setw(setwVal) << std::left << coord_enucmax[0];
+            diagfile2 << std::setw(setwVal) << std::left << coordenuc2;
+            diagfile2 << std::setw(setwVal) << std::left << coordenuc3;
 
             const Real velenuc2 = (AMREX_SPACEDIM <2) ? 0.0 : vel_enucmax[1];
             const Real velenuc3 = (AMREX_SPACEDIM <3) ? 0.0 : vel_enucmax[2];
-            diagfile2 << std::setw(20) << std::left << vel_enucmax[0];
-            diagfile2 << std::setw(20) << std::left << velenuc2;
-            diagfile2 << std::setw(20) << std::left << velenuc3;
+            diagfile2 << std::setw(setwVal) << std::left << vel_enucmax[0];
+            diagfile2 << std::setw(setwVal) << std::left << velenuc2;
+            diagfile2 << std::setw(setwVal) << std::left << velenuc3;
 
             if (spherical == 1) {
-              diagfile2 << std::setw(20) << std::left << Rloc_enucmax;
-              diagfile2 << std::setw(20) << std::left << vr_enucmax;
+              diagfile2 << std::setw(setwVal) << std::left << Rloc_enucmax;
+              diagfile2 << std::setw(setwVal) << std::left << vr_enucmax;
             }
-            diagfile2 << std::setw(20) << std::left << nuc_ener << std::endl;
+            diagfile2 << std::setw(setwVal) << std::left << nuc_ener << std::endl;
 
             // close file
             diagfile2.close();
@@ -592,9 +592,9 @@ Maestro::DiagFile (const int step,
             diagfile1_data[index*ndiag1+5] = vel_Tmax[0];
             diagfile1_data[index*ndiag1+6] = velT2;
             diagfile1_data[index*ndiag1+7] = velT3;
-            diagfile1 << std::setw(20) << std::left << vel_Tmax[0];
-            diagfile1 << std::setw(20) << std::left << velT2;
-            diagfile1 << std::setw(20) << std::left << velT3;
+            diagfile1 << std::setw(setwVal) << std::left << vel_Tmax[0];
+            diagfile1 << std::setw(setwVal) << std::left << velT2;
+            diagfile1 << std::setw(setwVal) << std::left << velT3;
             if (spherical == 1) {
               diagfile1_data[index*ndiag1+8] = Rloc_Tmax;
               diagfile1_data[index*ndiag1+9] = vr_Tmax;
@@ -667,11 +667,11 @@ Maestro::WriteDiagFile (int& index)
         // -- vr_Tmax
         // -- T_center
 
-        diagfile1.precision(10);
+        diagfile1.precision(outfilePrecision);
         diagfile1 << std::scientific;
         for (int ii=0; ii<index; ++ii) {
             for (int icomp=0; icomp<ndiag1; ++icomp) {
-                diagfile1 << std::setw(20) << std::left << diagfile1_data[ii*ndiag1+icomp];
+                diagfile1 << std::setw(setwVal) << std::left << diagfile1_data[ii*ndiag1+icomp];
             }
             Warning("in the endline part");
             diagfile1 << std::endl;
@@ -693,11 +693,11 @@ Maestro::WriteDiagFile (int& index)
         // -- vr_enucmax
         // nuc_ener
 
-        diagfile2.precision(10);
+        diagfile2.precision(outfilePrecision);
         diagfile2 << std::scientific;
         for (int ii=0; ii<index; ++ii) {
             for (int icomp=0; icomp<ndiag2; ++icomp) {
-                diagfile2 << std::setw(20) << std::left << diagfile2_data[ii*ndiag2+icomp];
+                diagfile2 << std::setw(setwVal) << std::left << diagfile2_data[ii*ndiag2+icomp];
             }
             diagfile2 << std::endl;
         }
