@@ -229,18 +229,6 @@ extern "C"
        const int* mask, const int* m_lo, const int* m_hi,
        const int* use_mask);
 
-    void diag(const int* lev, const int* lo, const int* hi,
-	      const amrex::Real* scal, const int* s_lo, const int* s_hi, const int* nc_s,
-	      const amrex::Real* rho_Hnuc, const int* hn_lo, const int* hn_hi,
-	      const amrex::Real* rho_Hext, const int* he_lo, const int* he_hi,
-	      const amrex::Real* rho0, const amrex::Real* p0,
-	      const amrex::Real* u, const int* u_lo, const int* u_hi,
-	      const amrex::Real* w0, const amrex::Real* dx,
-	      amrex::Real* Mach_max, amrex::Real* temp_max,
-	      amrex::Real* enuc_max, amrex::Real* Hext_max,
-              const int* mask, const int* m_lo, const int* m_hi,
-              const int* use_mask);
-
     void diag_sphr(const int* lev, const int* lo, const int* hi,
 		   const amrex::Real* scal, const int* s_lo, const int* s_hi, const int* nc_s,
 		   const amrex::Real* rho_Hnuc, const int* hn_lo, const int* hn_hi,
