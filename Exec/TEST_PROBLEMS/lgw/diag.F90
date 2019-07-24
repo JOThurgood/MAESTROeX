@@ -178,7 +178,6 @@ contains
     
   end subroutine testdiag
 
-  !xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   subroutine diag(lev, lo, hi, &
                   scal, s_lo, s_hi, nc_s, &
                   rho_Hnuc, hn_lo, hn_hi, &
@@ -281,8 +280,6 @@ contains
 
   end subroutine diag
 
-
-  !xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   subroutine diag_sphr(lev, lo, hi, &
                        scal, s_lo, s_hi, nc_s, &
                        rho_Hnuc, hn_lo, hn_hi, &
