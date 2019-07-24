@@ -4,7 +4,7 @@
 
 using namespace amrex;
 
-// Set precision of the output files (only implemented for diagfile3 so far)
+// Choose precision of all output files
 const int outfilePrecision = 15;
 const int setwVal = outfilePrecision+2+4+4; // 0. + precision + 4 for exp + 4 for gap
 
