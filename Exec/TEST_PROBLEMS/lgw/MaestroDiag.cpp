@@ -4,6 +4,10 @@
 
 using namespace amrex;
 
+// Set precision of the output files (only implemented for diagfile3 so far)
+const int outfilePrecision = 15;
+const int setwVal = outfilePrecision+2+4+4; // 0. + precision + 4 for exp + 4 for gap
+
 // write diagnostics files to disk
 // We hold many timesteps-worth of diagnostic information in a buffer
 // and output to the files only when flush_diag() is called.  This
@@ -546,34 +550,34 @@ Maestro::DiagFile (const int step,
             diagfile3.open(diagfilename3, std::ofstream::out |
                            std::ofstream::trunc | std::ofstream::binary);
             // write variable names
-            diagfile3 << std::setw(20) << std::left << "time";
-            diagfile3 << std::setw(20) << std::left << "max{U}";
-            diagfile3 << std::setw(20) << std::left << "max{Mach}";
-            diagfile3 << std::setw(20) << std::left << "tot kin energy";
-            diagfile3 << std::setw(20) << std::left << "tot grav energy";
-            diagfile3 << std::setw(20) << std::left << "tot int energy";
+            diagfile3 << std::setw(setwVal) << std::left << "time";
+            diagfile3 << std::setw(setwVal) << std::left << "max{U}";
+            diagfile3 << std::setw(setwVal) << std::left << "max{Mach}";
+            diagfile3 << std::setw(setwVal) << std::left << "tot kin energy";
+            diagfile3 << std::setw(setwVal) << std::left << "tot grav energy";
+            diagfile3 << std::setw(setwVal) << std::left << "tot int energy";
             if (spherical == 1) {
-              diagfile3 << std::setw(20) << std::left << "velx_center";
-              diagfile3 << std::setw(20) << std::left << "vely_center";
-              diagfile3 << std::setw(20) << std::left << "velz_center";
+              diagfile3 << std::setw(setwVal) << std::left << "velx_center";
+              diagfile3 << std::setw(setwVal) << std::left << "vely_center";
+              diagfile3 << std::setw(setwVal) << std::left << "velz_center";
             }
-            diagfile3 << std::setw(20) << std::left << "dt" << std::endl;
+            diagfile3 << std::setw(setwVal) << std::left << "dt" << std::endl;
 
             // write data
-            diagfile3.precision(10);
+            diagfile3.precision(outfilePrecision);
             diagfile3 << std::scientific;
-            diagfile3 << std::setw(20) << std::left << t_in;
-            diagfile3 << std::setw(20) << std::left << U_max;
-            diagfile3 << std::setw(20) << std::left << Mach_max;
-            diagfile3 << std::setw(20) << std::left << kin_ener;
-            diagfile3 << std::setw(20) << std::left << grav_ener;
-            diagfile3 << std::setw(20) << std::left << int_ener;
+            diagfile3 << std::setw(setwVal) << std::left << t_in;
+            diagfile3 << std::setw(setwVal) << std::left << U_max;
+            diagfile3 << std::setw(setwVal) << std::left << Mach_max;
+            diagfile3 << std::setw(setwVal) << std::left << kin_ener;
+            diagfile3 << std::setw(setwVal) << std::left << grav_ener;
+            diagfile3 << std::setw(setwVal) << std::left << int_ener;
             if (spherical == 1) {
-              diagfile3 << std::setw(20) << std::left << vel_center[0];
-              diagfile3 << std::setw(20) << std::left << vel_center[1];
-              diagfile3 << std::setw(20) << std::left << vel_center[2];
+              diagfile3 << std::setw(setwVal) << std::left << vel_center[0];
+              diagfile3 << std::setw(setwVal) << std::left << vel_center[1];
+              diagfile3 << std::setw(setwVal) << std::left << vel_center[2];
             }
-            diagfile3 << std::setw(20) << std::left << dt << std::endl;
+            diagfile3 << std::setw(setwVal) << std::left << dt << std::endl;
 
             // close file
             diagfile3.close();
@@ -721,11 +725,11 @@ Maestro::WriteDiagFile (int& index)
         // vel_center (3) (only if spherical)
         // dt
 
-        diagfile3.precision(10);
+        diagfile3.precision(outfilePrecision);
         diagfile3 << std::scientific;
         for (int ii=0; ii<index; ++ii) {
             for (int icomp=0; icomp<ndiag3; ++icomp) {
-                diagfile3 << std::setw(20) << std::left << diagfile3_data[ii*ndiag3+icomp];
+                diagfile3 << std::setw(setwVal) << std::left << diagfile3_data[ii*ndiag3+icomp];
             }
             diagfile3 << std::endl;
         }
