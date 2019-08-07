@@ -693,6 +693,13 @@ private:
     // end MaestroReact.cpp functions
     ////////////
 
+    ///////////
+    // MaestroViscosity.cpp functions
+    void Viscosity ();
+
+    // end MaestroViscosity.cpp functions
+    ///////////
+
     ////////////
     // regridding functions in MaestroRegrid.cpp
 

@@ -224,6 +224,11 @@ Maestro::AdvanceTimeStep (bool is_initIter) {
     ParallelDescriptor::ReduceRealMax(react_time,ParallelDescriptor::IOProcessorNumber());
     ParallelDescriptor::Bcast(&react_time,1,ParallelDescriptor::IOProcessorNumber());
 
+    if (maestro_verbose >= 1) {
+        Print() << "<<< STEP 1a : Viscous Diffusion >>>" << std::endl;
+    }
+    Viscosity();
+
     //////////////////////////////////////////////////////////////////////////////
     // STEP 2 -- define average expansion at time n+1/2
     //////////////////////////////////////////////////////////////////////////////
