@@ -34,6 +34,9 @@ module diag_module
   use eos_type_module
   use amrex_constants_module
   use fundamental_constants_module, only: Gconst
+ 
+  use extern_probin_module, only: eos_gamma ! for action experiment
+  use probin_module, only: pres_base, scale_height
 
   implicit none
 
@@ -81,6 +84,12 @@ contains
     logical            :: cell_valid
 
     type (eos_t) :: eos_state
+
+    ! Local for action experiment
+    double precision   :: p0an, rho0an, s0an, s_coeff
+    double precision   :: entropy_loc, action_u , action_s, entropy_0
+    action_u = ZERO
+    action_s = ZERO
 
     ! weight is the factor by which the volume of a cell at the current level
     ! relates to the volume of a cell at the coarsest level of refinement.
@@ -171,11 +180,45 @@ contains
             U_max = max(U_max,vel)
             Mach_max = max(Mach_max,vel/eos_state%cs)
 
+!!!!!            ! experimental wave action stuff
+!!!!!            !---------------------------------------
+!!!!!
+!!!!!            ! 2d only hardcoded for this !!!
+!!!!!            p0an    = pres_base * exp(-y / scale_height) ! analytical pb = pb(z=0) exp(-z/H) 
+!!!!!            rho0an  = p0an / abs(grav_const) / scale_height 
+!!!!!            s0an    = log(p0an)/eos_gamma - log(rho0an) 
+!!!!!
+!!!!!            action_u = action_u + weight * rho0an * vel**2  
+!!!!!            !! gamma law eos doesnt calculate entropy currently
+!!!!!
+!!!!!!!!            entropy_loc = log(eos_state%p)/eos_gamma - log(eos_state%rho)    
+!!!!!!!!!            entropy_loc = log(eos_state%T) - (eos_gamma-ONE)*log(eos_state%rho) + CONST
+!!!!!!!!!            entropy_loc = entropy_loc / eos_gamma
+!!!!!!!!            entropy_loc = entropy_loc - s0an
+!!!!!
+!!!!!            entropy_loc = - (eos_state%rho - rho0an)/rho0an
+!!!!!            
+!!!!!
+!!!!!            s_coeff = abs(grav_const) * scale_height * eos_gamma / (eos_gamma-ONE) 
+!!!!!            action_s = action_s + weight * rho0an *  entropy_loc**2 * s_coeff
+!!!!!
+!!!!!            ! print *,rho0an, eos_state%rho ! doing this with amp = 0 confirmed it is "correct"
+!!!!!!            print *,p0an, eos_state%p ! doing this with amp = 0 show some disparity. worse at larger z
+!!!!!
+!!!!!!            print *, s0an, entropy_loc + s0an, entropy_loc!, s_coeff
+!!!!!            print *, s0an, entropy_loc
+
           endif ! if cell valid
         enddo
       enddo
     enddo
-    
+
+    ! experimental !!!    
+    ! overwrite kin_ener and int_ener with experimental action stuff
+        ! need to add the input "kin_ener" for multilevel / multiprocess 
+!!!!!    kin_ener = kin_ener + action_u
+!!!!!    int_ener = int_ener + action_s
+
   end subroutine diag
 
   subroutine diag_sphr(lev, lo, hi, &
