@@ -148,8 +148,9 @@ Maestro::ModifyScalForce(Vector<MultiFab>& scal_force,
     BL_PROFILE_VAR("Maestro::ModifyScalForce()",ModifyScalForce);
 
 #ifdef AMREX_USE_CUDA
+    auto not_launched = Gpu::notInLaunchRegion();
     // turn on GPU
-    Gpu::setLaunchRegion(true);
+    if (not_launched) Gpu::setLaunchRegion(true);
 #endif
 
     RealVector divu;
@@ -184,13 +185,11 @@ Maestro::ModifyScalForce(Vector<MultiFab>& scal_force,
         MultiFab& scal_force_mf = scal_force[lev];
         const MultiFab& state_mf = state[lev];
         const MultiFab& umac_mf = umac[lev][0];
-#if (AMREX_SPACEDIM >= 2)
         const MultiFab& vmac_mf = umac[lev][1];
 #if (AMREX_SPACEDIM == 3)
         const MultiFab& wmac_mf = umac[lev][2];
         const MultiFab& s0cart_mf = s0_cart[lev];
         const MultiFab& divu_mf = divu_cart[lev];
-#endif
 #endif
 
         // loop over boxes (make sure mfi takes a cell-centered multifab as an argument)
@@ -233,11 +232,9 @@ Maestro::ModifyScalForce(Vector<MultiFab>& scal_force,
                                   state_mf[mfi].dataPtr(comp),
                                   AMREX_INT_ANYD(state_mf[mfi].loVect()), AMREX_INT_ANYD(state_mf[mfi].hiVect()),
                                   BL_TO_FORTRAN_ANYD(umac_mf[mfi]),
-#if (AMREX_SPACEDIM >= 2)
                                   BL_TO_FORTRAN_ANYD(vmac_mf[mfi]),
 #if (AMREX_SPACEDIM == 3)
                                   BL_TO_FORTRAN_ANYD(wmac_mf[mfi]),
-#endif
 #endif
                                   s0.dataPtr(), s0_edge.dataPtr(), w0.dataPtr(),
                                   AMREX_REAL_ANYD(dx), fullform);
@@ -245,17 +242,16 @@ Maestro::ModifyScalForce(Vector<MultiFab>& scal_force,
         }
     }
 
-#ifdef AMREX_USE_CUDA
-    // turn on GPU
-    Gpu::setLaunchRegion(false);
-#endif
-
     // average fine data onto coarser cells
     AverageDown(scal_force,comp,1);
 
     // fill ghost cells
     FillPatch(t_old, scal_force, scal_force, scal_force, comp, comp, 1, 0, bcs_f);
 
+#ifdef AMREX_USE_CUDA
+    // turn off GPU
+    if (not_launched) Gpu::setLaunchRegion(false);
+#endif
 }
 
 void
@@ -269,6 +265,12 @@ Maestro::MakeRhoHForce(Vector<MultiFab>& scal_force,
 {
     // timer for profiling
     BL_PROFILE_VAR("Maestro::MakeRhoHForce()",MakeRhoHForce);
+
+#ifdef AMREX_USE_CUDA
+    auto not_launched = Gpu::notInLaunchRegion();
+    // turn on GPU
+    if (not_launched) Gpu::setLaunchRegion(true);
+#endif
 
     // if we are doing the prediction, then it only makes sense to be in
     // this routine if the quantity we are predicting is rhoh', h, or rhoh
@@ -319,19 +321,11 @@ Maestro::MakeRhoHForce(Vector<MultiFab>& scal_force,
                    r_cc_loc.dataPtr(),
                    r_edge_loc.dataPtr());
 
-
-#ifdef AMREX_USE_CUDA
-    // turn on GPU
-    Gpu::setLaunchRegion(true);
-#endif
-
     for (int lev=0; lev<=finest_level; ++lev) {
 
         // get references to the MultiFabs at level lev
         MultiFab& scal_force_mf = scal_force[lev];
-#if (AMREX_SPACEDIM >= 1)
         const MultiFab& umac_mf = umac[lev][0];
-#if (AMREX_SPACEDIM >= 2)
         const MultiFab& vmac_mf = umac[lev][1];
 #if (AMREX_SPACEDIM == 3)
         const MultiFab& wmac_mf = umac[lev][2];
@@ -339,8 +333,6 @@ Maestro::MakeRhoHForce(Vector<MultiFab>& scal_force,
         const MultiFab& p0macx_mf = p0mac[lev][0];
         const MultiFab& p0macy_mf = p0mac[lev][1];
         const MultiFab& p0macz_mf = p0mac[lev][2];
-#endif
-#endif
 #endif
         const MultiFab& thermal_mf = thermal[lev];
         const MultiFab& psi_mf = psi_cart[lev];
@@ -393,9 +385,7 @@ Maestro::MakeRhoHForce(Vector<MultiFab>& scal_force,
                             scal_force_mf[mfi].dataPtr(RhoH),
                             AMREX_INT_ANYD(scal_force_mf[mfi].loVect()),
                             AMREX_INT_ANYD(scal_force_mf[mfi].hiVect()),
-#if (AMREX_SPACEDIM == 1)
-                            BL_TO_FORTRAN_ANYD(umac_mf[mfi]),
-#elif (AMREX_SPACEDIM == 2)
+#if (AMREX_SPACEDIM == 2)
                             BL_TO_FORTRAN_ANYD(vmac_mf[mfi]),
 #elif (AMREX_SPACEDIM == 3)
                             BL_TO_FORTRAN_ANYD(wmac_mf[mfi]),
@@ -407,12 +397,12 @@ Maestro::MakeRhoHForce(Vector<MultiFab>& scal_force,
         }
     }
 
-#ifdef AMREX_USE_CUDA
-    // turn off GPU
-    Gpu::setLaunchRegion(false);
-#endif
-
     // average down and fill ghost cells
     AverageDown(scal_force,RhoH,1);
     FillPatch(t_old,scal_force,scal_force,scal_force,RhoH,RhoH,1,0,bcs_f);
+
+#ifdef AMREX_USE_CUDA
+    // turn off GPU
+    if (not_launched) Gpu::setLaunchRegion(false);
+#endif
 }

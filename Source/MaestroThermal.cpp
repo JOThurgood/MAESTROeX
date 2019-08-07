@@ -161,7 +161,7 @@ void Maestro::ApplyThermal(MLABecLaplacian& mlabec,
                 mlmg_lobc[idim] = LinOpBCType::Dirichlet;
             } else if (bcs[bccomp].lo(idim) == BCType::ext_dir) {
                 // inflow
-                mlmg_lobc[idim] = LinOpBCType::inflow;
+                mlmg_lobc[idim] = LinOpBCType::Dirichlet;
             } else {
                 mlmg_lobc[idim] = LinOpBCType::Neumann;
             }
@@ -172,7 +172,7 @@ void Maestro::ApplyThermal(MLABecLaplacian& mlabec,
                 mlmg_hibc[idim] = LinOpBCType::Dirichlet;
             } else if (bcs[bccomp].hi(idim) == BCType::ext_dir) {
                 // inflow
-                mlmg_hibc[idim] = LinOpBCType::inflow;
+                mlmg_hibc[idim] = LinOpBCType::Dirichlet;
             } else {
                 mlmg_hibc[idim] = LinOpBCType::Neumann;
             }
@@ -226,8 +226,9 @@ Maestro::MakeThermalCoeffs(const Vector<MultiFab>& scal,
     BL_PROFILE_VAR("Maestro::MakeThermalCoeffs()",MakeThermalCoeffs);
 
 #ifdef AMREX_USE_CUDA
+    auto not_launched = Gpu::notInLaunchRegion();
     // turn on GPU
-    Gpu::setLaunchRegion(true);
+    if (not_launched) Gpu::setLaunchRegion(true);
 #endif
 
     for (int lev = 0; lev <= finest_level; ++lev)
@@ -264,7 +265,7 @@ Maestro::MakeThermalCoeffs(const Vector<MultiFab>& scal,
 
 #ifdef AMREX_USE_CUDA
     // turn off GPU
-    Gpu::setLaunchRegion(false);
+    if (not_launched) Gpu::setLaunchRegion(false);
 #endif
 
 }
@@ -376,7 +377,7 @@ Maestro::ThermalConduct (const Vector<MultiFab>& s1,
             if (bcs_s[RhoH].lo(idim) == BCType::foextrap) {
                 mlmg_lobc[idim] = LinOpBCType::Dirichlet;
             } else if (bcs_s[RhoH].lo(idim) == BCType::ext_dir) {
-                mlmg_lobc[idim] = LinOpBCType::inflow;
+                mlmg_lobc[idim] = LinOpBCType::Dirichlet;
             } else {
                 mlmg_lobc[idim] = LinOpBCType::Neumann;
             }
@@ -385,7 +386,7 @@ Maestro::ThermalConduct (const Vector<MultiFab>& s1,
             if (bcs_s[RhoH].hi(idim) == BCType::foextrap) {
                 mlmg_hibc[idim] = LinOpBCType::Dirichlet;
             } else if (bcs_s[RhoH].hi(idim) == BCType::ext_dir) {
-                mlmg_hibc[idim] = LinOpBCType::inflow;
+                mlmg_hibc[idim] = LinOpBCType::Dirichlet;
             } else {
                 mlmg_hibc[idim] = LinOpBCType::Neumann;
             }

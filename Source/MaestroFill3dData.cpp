@@ -15,27 +15,23 @@ Maestro::Put1dArrayOnCart (const RealVector& s0,
                            int sbccomp, int variable_type)
 {
     // timer for profiling
-    BL_PROFILE_VAR("Maestro::Put1dArrayOnCart()",Put1dArrayOnCart);
+    BL_PROFILE_VAR("Maestro::Put1dArrayOnCart()", Put1dArrayOnCart);
+
+#ifdef AMREX_USE_CUDA
+    auto not_launched = Gpu::notInLaunchRegion();
+    // turn on GPU
+    if (not_launched) Gpu::setLaunchRegion(true);
+#endif
 
     int ng = s0_cart[0].nGrow();
     if (ng > 0 && bcs.size() == 0) {
         Abort("Put1dArrayOnCart with ghost cells requires bcs input");
     }
 
-#ifdef AMREX_USE_CUDA
-    // turn on GPU
-    Gpu::setLaunchRegion(true);
-#endif
-
     for (int lev=0; lev<=finest_level; ++lev) {
         Put1dArrayOnCart(lev,s0,s0_cart,is_input_edge_centered,
         		 is_output_a_vector,bcs,sbccomp);
     }
-
-#ifdef AMREX_USE_CUDA
-    // turn on GPU
-    Gpu::setLaunchRegion(false);
-#endif
 
     int ncomp = is_output_a_vector ? AMREX_SPACEDIM : 1;
 
@@ -47,6 +43,12 @@ Maestro::Put1dArrayOnCart (const RealVector& s0,
         FillPatch(t_old, s0_cart, s0_cart, s0_cart, 0, 0, ncomp, sbccomp, bcs,
                   variable_type);
     }
+
+#ifdef AMREX_USE_CUDA
+    // turn off GPU
+    if (not_launched) Gpu::setLaunchRegion(false);
+#endif
+
 }
 
 void
@@ -112,14 +114,12 @@ Maestro::Addw0 (Vector<std::array< MultiFab, AMREX_SPACEDIM > >& uedge,
 
         // get references to the MultiFabs at level lev
         MultiFab& uedge_mf = uedge[lev][0];
-#if (AMREX_SPACEDIM >= 2)
         MultiFab& vedge_mf = uedge[lev][1];
 #if (AMREX_SPACEDIM == 3)
         MultiFab& wedge_mf = uedge[lev][2];
         const MultiFab& w0macx_mf = w0mac[lev][0];
         const MultiFab& w0macy_mf = w0mac[lev][1];
         const MultiFab& w0macz_mf = w0mac[lev][2];
-#endif
 #endif
 
         // need one cell-centered MF for the MFIter
@@ -140,11 +140,9 @@ Maestro::Addw0 (Vector<std::array< MultiFab, AMREX_SPACEDIM > >& uedge,
 
                 addw0(&lev,ARLIM_3D(validBox.loVect()), ARLIM_3D(validBox.hiVect()),
                       BL_TO_FORTRAN_3D(uedge_mf[mfi]),
-#if (AMREX_SPACEDIM >= 2)
                       BL_TO_FORTRAN_3D(vedge_mf[mfi]),
 #if (AMREX_SPACEDIM == 3)
                       BL_TO_FORTRAN_3D(wedge_mf[mfi]),
-#endif
 #endif
                       w0.dataPtr(),&mult);
 
@@ -353,11 +351,9 @@ Maestro::PutDataOnFaces(const Vector<MultiFab>& s_cc,
 
         // get references to the MultiFabs at level lev
         MultiFab& facex_mf = face[lev][0];
-#if (AMREX_SPACEDIM >= 2)
         MultiFab& facey_mf = face[lev][1];
 #if (AMREX_SPACEDIM == 3)
         MultiFab& facez_mf = face[lev][2];
-#endif
 #endif
         // need one cell-centered MF for the MFIter
         const MultiFab& scc_mf = s_cc[lev];
@@ -378,11 +374,9 @@ Maestro::PutDataOnFaces(const Vector<MultiFab>& s_cc,
             put_data_on_faces(ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
                               BL_TO_FORTRAN_3D(scc_mf[mfi]),
                               BL_TO_FORTRAN_3D(facex_mf[mfi]),
-#if (AMREX_SPACEDIM >= 2)
                               BL_TO_FORTRAN_3D(facey_mf[mfi]),
 #if (AMREX_SPACEDIM == 3)
                               BL_TO_FORTRAN_3D(facez_mf[mfi]),
-#endif
 #endif
                               &harmonic_avg);
         }

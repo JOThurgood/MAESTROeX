@@ -185,12 +185,12 @@ Maestro::Init ()
 			WriteSmallPlotFile(0,t_old,dt,rho0_old,rhoh0_old,p0_old,gamma1bar_old,uold,sold,S_cc_old);
 		}
 
-		if (chk_int > 0) {
+		if (chk_int > 0 || chk_deltat > 0) {
 			Print() << "\nWriting checkpoint 0 after all initialization" << std::endl;
 			WriteCheckPoint(0);
-        }
-
-        if (sum_interval > 0  || sum_per > 0) {
+		}
+		
+		if (sum_interval > 0  || sum_per > 0) {
 			int index_dummy = 0;
 			Print() << "\nWriting diagnosis file after all initialization" << std::endl;
 			DiagFile(0,t_old,rho0_old,p0_old,uold,sold,index_dummy);

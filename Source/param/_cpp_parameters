@@ -144,6 +144,10 @@ small_plot_deltat                   Real           -1.0
 # Number of timesteps between writing a checkpoint file
 chk_int                             int            0
 
+# rather than output a checkpoint after a fixed number of timesteps, output
+# after the solution has advanced past chk\_deltat in time
+chk_deltat                          Real           -1.0
+
 # Turn on storing of enthalpy-based quantities in the plotfile
 # when we are running with {\tt use\_tfromp}
 # NOT IMPLEMENTED YET
@@ -176,6 +180,9 @@ plot_gpi                             bool            true
 
 # plot soundspeed
 plot_cs                              bool            false
+
+# plot gravitational acceleration
+plot_grav                            bool            false
 
 # prefix to use in plotfile file names
 plot_base_name                      string          "plt"
@@ -349,7 +356,7 @@ enthalpy_pred_type                  int            1            y
 species_pred_type                   int            1		y
 
 # turns on second order correction to delta gamma1 term
-use_delta_gamma1_term               bool            false        y
+use_delta_gamma1_term               bool            true        y
 
 # turn on the etarho term as described in flow chart
 use_etarho                          bool            true
