@@ -695,7 +695,11 @@ private:
 
     ///////////
     // MaestroViscosity.cpp functions
-    void Viscosity ();
+
+    void Viscosity (amrex::Vector<amrex::MultiFab>& u_in,
+                    RealVector& w0_in,
+                    const amrex::Vector<amrex::MultiFab>& s_in, 
+                    const amrex::Real dt_in);
 
     // end MaestroViscosity.cpp functions
     ///////////

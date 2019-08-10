@@ -227,7 +227,7 @@ Maestro::AdvanceTimeStep (bool is_initIter) {
     if (maestro_verbose >= 1) {
         Print() << "<<< STEP 1a : Viscous Diffusion >>>" << std::endl;
     }
-    Viscosity();
+    Viscosity(uold,w0,sold,0.5*dt);
 
     //////////////////////////////////////////////////////////////////////////////
     // STEP 2 -- define average expansion at time n+1/2
