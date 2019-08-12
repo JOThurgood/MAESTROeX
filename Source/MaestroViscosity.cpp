@@ -62,22 +62,21 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
   // 2. solve the full velocity to dt
 
-  // some time loop   
   Real visc_time = 0.0;
   while (visc_time < dt_in){
 
     // Calculate the viscous time step
     Real dt_visc = 1.e99; // this is always overwritten in ViscosityDt
-    ViscosityDt(ufull,s_in, dt_visc)
+    ViscosityDt(ufull,s_in, dt_visc);
+    if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time; // limit if needed
 
-    //  check that this timestep will not take us past dt_in. If it is, set the timestep to be such that visc_time == dt_in after the update
-    //  if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time
-
+    // update the ghosts of ufull / boundary conditions
+    // how? 
     // diffuse the viscosity for dt_visc worth of time.
     // ViscosityExplicitSolve(ufull,s_in, dt_visc)
 
-    // advance the time in the viscosity solve
-    // visc_time += dt_visc 
+    // advance the subcycling time
+     visc_time += dt_visc; 
   }
 
   // 3. decompose the full velocity and update u_in and w0_in 
@@ -86,8 +85,8 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
 
 // the u_in is the full viscosity
-// s_in for appropriate density
-// dt_in is a reference that will be mutated to the calculated dt
+// s_in is used for density
+// dt_in will be mutated to the calculated dt
 void
 Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
                      const Vector<MultiFab>& s_in,
@@ -97,33 +96,38 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
   Real dt_visc = 1.e20;
   Real dt_lev = 1.e99;
 
-
   // Loop over levels
   for (int lev = 0; lev <= finest_level; ++lev) {
 
-    // get references to the MultiFabs at level lev
+    // get references to the MultiFabs atlev
     const MultiFab& u_in_mf = u_in[lev];
     const MultiFab& s_in_mf = s_in[lev];
 
 #ifdef _OPENMP
 #pragma omp parallel reduction(min:dt_lev)
 #endif
-
     {
+      
       Real dt_grid = 1.e99;
 
       // Loop over boxes (make sure mfi takes a cell-centered multifab as an argument)
       for ( MFIter mfi(u_in_mf, true); mfi.isValid(); ++mfi ) {
+
         // Get the index space of the valid region
         const Box& tileBox = mfi.tilebox();
         const Real* dx = geom[lev].CellSize();
 
-
         // call fortran 
         if (spherical ==0) {
-          // call fortran here
+
+          visc_estdt(&lev, &dt_grid, // why give it lev (and lev being mutable might be pretty dangerous) 
+                      ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
+                      ZFILL(dx),
+                      BL_TO_FORTRAN_FAB(s_in_mf[mfi]),
+                      BL_TO_FORTRAN_FAB(u_in_mf[mfi]));
+
         } else {
-          Abort("viscositynot supported for spherical");
+          Abort("viscosity not currently supported for spherical");
         }
 
 
@@ -146,10 +150,9 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
 
   } // end lev loop
 
-
-
   // set dt_in to the final calculated dt
   dt_in = dt_visc;
+
 }
 
 /* 
