@@ -60,7 +60,7 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
   }
 
 
-  // 2. solve the full velocity to dt
+  // 2. solve the full velocity to dt_in
 
   Real visc_time = 0.0;
   while (visc_time < dt_in){
@@ -70,14 +70,15 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
     ViscosityDt(ufull,s_in, dt_visc);
     if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time; // limit if needed
 
-    // diffuse the viscosity for dt_visc worth of time.
+    // diffuse the velocity field for dt_visc worth of time.
     ViscosityExplicitSolve(ufull,s_in, dt_visc);
 
     // advance the subcycling time
-     visc_time += dt_visc; 
+    visc_time += dt_visc; 
   }
 
   // 3. decompose the full velocity and update u_in and w0_in 
+  // nb - check if using new time integrator? only actually want to do this if w0 isn't a dummy
 
 }
 
