@@ -84,9 +84,7 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 }
 
 
-// the u_in is the full viscosity
-// s_in is used for density
-// dt_in will be mutated to the calculated dt
+// the u_in is the full velocity field, s_in is for density, dt_in will be mutated to the calculated dt
 void
 Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
                      const Vector<MultiFab>& s_in,
@@ -132,7 +130,7 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
 
 
       } // end loop over boxes
-    
+   
       dt_lev = std::min(dt_lev, dt_grid);
 
     } // end OpenMP block
