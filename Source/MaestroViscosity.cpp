@@ -66,11 +66,12 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
   Real visc_time = 0.0;
   while (visc_time < dt_in){
 
-    // Calculate the viscous time step - this is actually going to be a fair chunk of code for the paralleism. Make a Maestro::ViscosityDt function?
-    // dt_visc = ViscosityDt(ufull,s_in)
+    // Calculate the viscous time step
+    Real dt_visc = 1.e99; // this is always overwritten in ViscosityDt
+    ViscosityDt(ufull,s_in, dt_visc)
 
     //  check that this timestep will not take us past dt_in. If it is, set the timestep to be such that visc_time == dt_in after the update
-    //  if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time + SMALL // ?
+    //  if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time
 
     // diffuse the viscosity for dt_visc worth of time.
     // ViscosityExplicitSolve(ufull,s_in, dt_visc)
@@ -84,12 +85,83 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 }
 
 
-// this will need a prototype declared in Maestro.H
+// the u_in is the full viscosity
+// s_in for appropriate density
+// dt_in is a reference that will be mutated to the calculated dt
 void
-Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
-                                const Vector<MultiFab>& s_in,
-                                Real dt_in)
+Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
+                     const Vector<MultiFab>& s_in,
+                     Real& dt_in)
 {
-  // loop through the levels and individual boxes
-  // call a fortran routine that will take u_in, s_in, dt_in and update that velocity field (internal uolds and unews will be dealt with within fortran)
+
+  Real dt_visc = 1.e20;
+  Real dt_lev = 1.e99;
+
+
+  // Loop over levels
+  for (int lev = 0; lev <= finest_level; ++lev) {
+
+    // get references to the MultiFabs at level lev
+    const MultiFab& u_in_mf = u_in[lev];
+    const MultiFab& s_in_mf = s_in[lev];
+
+#ifdef _OPENMP
+#pragma omp parallel reduction(min:dt_lev)
+#endif
+
+    {
+      Real dt_grid = 1.e99;
+
+      // Loop over boxes (make sure mfi takes a cell-centered multifab as an argument)
+      for ( MFIter mfi(u_in_mf, true); mfi.isValid(); ++mfi ) {
+        // Get the index space of the valid region
+        const Box& tileBox = mfi.tilebox();
+        const Real* dx = geom[lev].CellSize();
+
+
+        // call fortran 
+        if (spherical ==0) {
+          // call fortran here
+        } else {
+          Abort("viscositynot supported for spherical");
+        }
+
+
+      } // end loop over boxes
+    
+      dt_lev = std::min(dt_lev, dt_grid);
+
+    } // end OpenMP block
+
+    // find the smallest dt over all processors
+    ParallelDescriptor::ReduceRealMin(dt_lev);
+
+    if (maestro_verbose > 0) {
+      Print() << "Call to estdt for level " << lev << " gives dt_lev = " << dt_lev << std::endl;
+
+    // update dt_visc over all levels
+    dt_visc = std::min(dt_visc,dt_lev);
+
+    }
+
+  } // end lev loop
+
+
+
+  // set dt_in to the final calculated dt
+  dt_in = dt_visc;
 }
+
+/* 
+
+ // this will need a prototype declared in Maestro.H
+ void
+ Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
+                                 const Vector<MultiFab>& s_in,
+                                 Real dt_in)
+ {
+   // loop through the levels and individual boxes
+   // call a fortran routine that will take u_in, s_in, dt_in and update that velocity field (internal uolds and unews will be dealt with within fortran)
+ }
+
+*/
