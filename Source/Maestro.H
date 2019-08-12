@@ -704,6 +704,12 @@ private:
     void ViscosityDt(const amrex::Vector<amrex::MultiFab>& u_in,
                      const amrex::Vector<amrex::MultiFab>& s_in,
                      amrex::Real& dt_in);
+
+    void ViscosityExplicitSolve(amrex::Vector<amrex::MultiFab>& u_in,
+                     const amrex::Vector<amrex::MultiFab>& s_in,
+                     const amrex::Real& dt_in);
+
+
     // end MaestroViscosity.cpp functions
     ///////////
 

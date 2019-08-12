@@ -1235,6 +1235,12 @@ extern "C"
                const amrex::Real* dx,
                const amrex::Real* scal,  const int* s_lo, const int* s_hi, const int* nc_s,
                const amrex::Real* u,     const int* u_lo, const int* u_hi, const int* nc_u);
+
+    void visc_solve(const int* lev, const amrex::Real* dt,
+               const int* lo, const int* hi,
+               const amrex::Real* dx,
+               const amrex::Real* scal,  const int* s_lo, const int* s_hi, const int* nc_s,
+               amrex::Real* u,     const int* u_lo, const int* u_hi, const int* nc_u);
     /////////////////////
 
 #ifdef __cplusplus

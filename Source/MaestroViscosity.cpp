@@ -70,10 +70,8 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
     ViscosityDt(ufull,s_in, dt_visc);
     if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time; // limit if needed
 
-    // update the ghosts of ufull / boundary conditions
-    // how? 
     // diffuse the viscosity for dt_visc worth of time.
-    // ViscosityExplicitSolve(ufull,s_in, dt_visc)
+    ViscosityExplicitSolve(ufull,s_in, dt_visc);
 
     // advance the subcycling time
      visc_time += dt_visc; 
@@ -140,11 +138,10 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
 
     if (maestro_verbose > 0) {
       Print() << "Call to estdt for level " << lev << " gives dt_lev = " << dt_lev << std::endl;
+    }
 
     // update dt_visc over all levels
     dt_visc = std::min(dt_visc,dt_lev);
-
-    }
 
   } // end lev loop
 
@@ -153,16 +150,50 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
 
 }
 
-/* 
-
  // this will need a prototype declared in Maestro.H
  void
  Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
                                  const Vector<MultiFab>& s_in,
-                                 Real dt_in)
- {
-   // loop through the levels and individual boxes
-   // call a fortran routine that will take u_in, s_in, dt_in and update that velocity field (internal uolds and unews will be dealt with within fortran)
- }
+                                 const Real& dt_in)
+{
+  // Boundary conditions need applied somewhere here 
 
-*/
+  // Loop over levels
+  for (int lev = 0; lev <= finest_level; ++lev) {
+
+    // get references to the MultiFabs atlev
+    MultiFab& u_in_mf = u_in[lev];
+    const MultiFab& s_in_mf = s_in[lev];
+
+    // dont forget to check this openmp block works as you may expect
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+    {
+      
+      // Loop over boxes (make sure mfi takes a cell-centered multifab as an argument)
+      for ( MFIter mfi(u_in_mf, true); mfi.isValid(); ++mfi ) {
+
+        // Get the index space of the valid region
+        const Box& tileBox = mfi.tilebox();
+        const Real* dx = geom[lev].CellSize();
+
+        // call fortran 
+        if (spherical ==0) {
+          visc_solve(&lev, &dt_in,
+                      ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
+                      ZFILL(dx),
+                      BL_TO_FORTRAN_FAB(s_in_mf[mfi]),
+                      BL_TO_FORTRAN_FAB(u_in_mf[mfi]));
+        } else {
+          Abort("viscosity not currently supported for spherical");
+        }
+
+
+      } // end loop over boxes
+   
+    } // end OpenMP block
+
+  } // end lev loop
+
+}
