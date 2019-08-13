@@ -8,19 +8,12 @@ using namespace amrex;
 /* Solves dU/dt = mu del^2 U explicitly with FTCS
    up to dt_in
   
-  Will be used in an operator splitting formalism.
+  Will be called as a split-operator (called where Maestro::React is called).
 
   Think at step 1 want to use density in `sold`, and in step 5 and 8 use `s2`
-  Think always want `uold`
+  Think always want `uold`, but pass as a ref to the method instead of directly acessing it.
   Not sure about w0. Think in step 1 you want `w0`, since that *is* w0_old by then, it sjust `w0_old=w0` doesn't happen till step 2
   At later times, think want to use `w0_old` to correspond to `uold`.
-
-  Arguments
-
-  Since you want w0 and w0_old at different times, it should be an argument rather than using the w0 data member directly
-  You always use uold so it could be direct, but it might turn out this is wrong so perhaps it too should be an argument
-  s varies so needs to be an argument.
-
 
 */
 
@@ -31,11 +24,9 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
                     const Real dt_in)
 {
 
-  // think you always need to construct a full U, don't think the equation decouples properly?
-  // (as opposed to diffusing utilde and w0 separately)
-
-  // 1. construct full velocity. My gut instinct is this step is involved enough to be its own function,
-  //    but to have things like lev in scope it would have to be a member of Maestro so I don't know if it is ill-advised
+  // 1. construct full velocity. Maybe this should be its own method / function.
+  // what follows is basically monkey-see-monkey-do from 
+  // https://github.com/AMReX-Astro/MAESTROeX/blob/bbff66eb6520c0c6b379765937cc546811b7ab53/Source/MaestroAdvection.cpp#L16-L36
 
   // create a utilde with filled ghost cells
   Vector<MultiFab> utilde(finest_level+1);
@@ -44,7 +35,7 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
       utilde[lev].setVal(0.);
   }
 
-  FillPatch(t_new, utilde, u_in, u_in, 0, 0, AMREX_SPACEDIM, 0, bcs_u, 1); // not sure I understand the FillPatch interface
+  FillPatch(t_new, utilde, u_in, u_in, 0, 0, AMREX_SPACEDIM, 0, bcs_u, 1); // not sure I understand the FillPatch interface? 
 
   // create a MultiFab to hold uold + w0
   Vector<MultiFab>      ufull(finest_level+1);
@@ -54,7 +45,7 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
   }
 
   // create ufull = uold + w0
-  Put1dArrayOnCart(w0_in,ufull,1,1,bcs_u,0,1);
+  Put1dArrayOnCart(w0_in,ufull,1,1,bcs_u,0,1); 
   for (int lev=0; lev<=finest_level; ++lev) {
       MultiFab::Add(ufull[lev],utilde[lev],0,0,AMREX_SPACEDIM,ng_adv);
   }
@@ -78,7 +69,8 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
   }
 
-  // Do a final fill of the ghost cells (ViscosityExplicitSolve fills before the advance)
+  // Do a final fill of the ghost cells on ufull? (ViscosityExplicitSolve fills before the advance)
+  // -- (or wait till after the decomposition and fill the ghosts of u_in and w0_in)
 
   // 3. decompose the full velocity and update u_in and w0_in 
   // nb - check if using new time integrator? only actually want to do this if w0 isn't a dummy
@@ -120,7 +112,7 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
         // call fortran 
         if (spherical ==0) {
 
-          visc_estdt(&lev, &dt_grid, // why give it lev (and lev being mutable might be pretty dangerous) 
+          visc_estdt(&lev, &dt_grid, // why give it lev (and lev being mutable might be pretty dangerous?) 
                       ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
                       ZFILL(dx),
                       BL_TO_FORTRAN_FAB(s_in_mf[mfi]),
@@ -189,7 +181,7 @@ Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
                       ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
                       ZFILL(dx),
                       BL_TO_FORTRAN_FAB(s_in_mf[mfi]),
-                      BL_TO_FORTRAN_FAB(u_in_mf[mfi]));
+                      BL_TO_FORTRAN_FAB(u_in_mf[mfi])); // I was thinking of having visc_solve directly mutate u_in_mf, or should i have an old / new and use std::swap or something on them in the c++ ?
         } else {
           Abort("viscosity not currently supported for spherical");
         }
