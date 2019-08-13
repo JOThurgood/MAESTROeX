@@ -37,14 +37,14 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
   // 1. construct full velocity. My gut instinct is this step is involved enough to be its own function,
   //    but to have things like lev in scope it would have to be a member of Maestro so I don't know if it is ill-advised
 
-  // create a uold with filled ghost cells
+  // create a utilde with filled ghost cells
   Vector<MultiFab> utilde(finest_level+1);
   for (int lev=0; lev<=finest_level; ++lev) {
       utilde[lev].define(grids[lev], dmap[lev], AMREX_SPACEDIM, ng_adv);
       utilde[lev].setVal(0.);
   }
 
-  FillPatch(t_new, utilde, u_in, u_in, 0, 0, AMREX_SPACEDIM, 0, bcs_u, 1); // not sure about this. Why does it need t_new, etc etc
+  FillPatch(t_new, utilde, u_in, u_in, 0, 0, AMREX_SPACEDIM, 0, bcs_u, 1); // not sure I understand the FillPatch interface
 
   // create a MultiFab to hold uold + w0
   Vector<MultiFab>      ufull(finest_level+1);
@@ -66,7 +66,7 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
   while (visc_time < dt_in){
 
     // Calculate the viscous time step
-    Real dt_visc = 1.e99; // this is always overwritten in ViscosityDt
+    Real dt_visc = 1.e99; // this will be mutated in ViscosityDt
     ViscosityDt(ufull,s_in, dt_visc);
     if ( (visc_time + dt_visc) > dt_in ) dt_visc = dt_in - visc_time; // limit if needed
 
@@ -75,7 +75,10 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
     // advance the subcycling time
     visc_time += dt_visc; 
+
   }
+
+  // Do a final fill of the ghost cells (ViscosityExplicitSolve fills before the advance)
 
   // 3. decompose the full velocity and update u_in and w0_in 
   // nb - check if using new time integrator? only actually want to do this if w0 isn't a dummy
@@ -152,12 +155,13 @@ Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
 }
 
  // this will need a prototype declared in Maestro.H
- void
- Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
-                                 const Vector<MultiFab>& s_in,
-                                 const Real& dt_in)
+void
+Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
+                                const Vector<MultiFab>& s_in,
+                                const Real& dt_in)
 {
-  // Boundary conditions need applied somewhere here 
+
+  // Fill the ghosts (remember to do a final fill after the loop)
 
   // Loop over levels
   for (int lev = 0; lev <= finest_level; ++lev) {
