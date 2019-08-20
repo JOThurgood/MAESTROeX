@@ -53,6 +53,10 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
   // 2. solve the full velocity to dt_in
 
+  /* The following subcycling is likely to be stable but there will be "some serious reduction in the overall order of the algo" 
+     according to AN. so either do an implicit solve or restrict the overall dt. In otherwords, no need to calculate a dt here, just 
+     do a single dt_in step, whether implicit or explicity, and leave the responsibility for appropriate dt to the rest of the code
+
   Real visc_time = 0.0;
   while (visc_time < dt_in){
 
@@ -69,6 +73,12 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
   }
 
+  */
+
+  // diffuse the velocity field for dt_visc worth of time.
+  ViscosityExplicitSolve(ufull,s_in, dt_visc);
+  //ViscosityImplicitSolve(ufull,s_in, dt_visc);
+
   // Do a final fill of the ghost cells on ufull? (ViscosityExplicitSolve fills before the advance)
   // -- (or wait till after the decomposition and fill the ghosts of u_in and w0_in)
 
@@ -77,8 +87,8 @@ Maestro::Viscosity (Vector<MultiFab>& u_in,
 
 }
 
-
 // the u_in is the full velocity field, s_in is for density, dt_in will be mutated to the calculated dt
+// this might be redundant, in light of comments from AN
 void
 Maestro::ViscosityDt(const Vector<MultiFab>& u_in,
                      const Vector<MultiFab>& s_in,
@@ -177,6 +187,7 @@ Maestro::ViscosityExplicitSolve(Vector<MultiFab>& u_in,
 
         // call fortran 
         if (spherical ==0) {
+          // should rename visc_solve something more descriptive ("explicit") in the fortran and c binding
           visc_solve(&lev, &dt_in,
                       ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
                       ZFILL(dx),

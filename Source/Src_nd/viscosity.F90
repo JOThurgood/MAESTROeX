@@ -38,6 +38,7 @@ contains
 
   end subroutine visc_estdt
 
+  !! should rename this something like explicit solve or something
   subroutine visc_solve(lev, dt, lo, hi, dx, &
                     scal, s_lo, s_hi, nc_s, &
                     u,    u_lo, u_hi, nc_u) bind (C,name="visc_solve")
@@ -52,11 +53,8 @@ contains
     integer         , intent(in   ) :: u_lo(3), u_hi(3), nc_u
     double precision, intent(in   ) :: scal (s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),nc_s)
     double precision, intent(inout) :: u    (u_lo(1):u_hi(1),u_lo(2):u_hi(2),u_lo(3):u_hi(3),nc_u)
- 
-  !! this is on the commit prior to solve being refactored for gpu so is a bit easier to understand / work from
-  !! https://github.com/AMReX-Astro/MAESTROeX/blob/4463a9344e266962c4d28ea565c76b85a22ebbcb/Source/Src_nd/compute_dt.F90
 
-    print *,'hi from visc_solve'
+     
 
   end subroutine visc_solve
 
