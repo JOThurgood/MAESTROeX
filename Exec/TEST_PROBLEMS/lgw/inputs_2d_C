@@ -112,8 +112,6 @@ system.regtest_reduction = 1
   pert_amp = 0.01d0
   k_hoz = 4.0d0
   k_vert = 2.0d0
-  do_uniform = .false.
-  do_isentropic = .false.
   use_p_dens_g = .false.
   use_p_h_g = .true.
 

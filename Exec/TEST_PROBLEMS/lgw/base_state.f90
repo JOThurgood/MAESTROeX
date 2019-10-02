@@ -26,7 +26,7 @@ module base_state_module
        prob_hi, small_dens, small_temp, &
        anelastic_cutoff_density, buoyancy_cutoff_factor
   use base_state_geometry_module, only: nr_fine, dr, nr, max_radial_level
-  use probin_module, only: dens_base, pres_base, do_isentropic, do_uniform, &
+  use probin_module, only: dens_base, pres_base, &
         use_p_dens_g, use_p_H_g, scale_height
 
   implicit none
