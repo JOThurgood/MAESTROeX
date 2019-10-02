@@ -39,6 +39,8 @@ Jupyter notebooks (using Yt) are included in `analysis/`.
 
 * `amplitude_test.ipynb` Compares measured vs expected periods at probe points for a varienty of amplitudes. Defines a function which plots the expected signal at a single point for the standing oscillations (for given kh, kv, gamma, g, H) and the measured signal from simulation data at that point. Note that if you chose points close to the nodes this can produce some misleading/confusing plots.
 
+* `compare_base_state_evo.ipynb` - compares base state evolution for two separate runs. Mainly via td-diagrams. Also some other analysis.
+
 Python scripts in `analysis/`
 
 * `quick_2d_movie.py` script which takes command line args to produce a movie for a time-series of plotfiles. Run  `python quick_2d_movie.py  -h` for help.
