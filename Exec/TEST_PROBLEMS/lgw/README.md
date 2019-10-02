@@ -24,6 +24,9 @@
 
 Jupyter notebooks (using Yt) are included in `analysis/`.
 
+
+* `simulation_quick_look.ipynb` a number of analyses related top the problem. Visualisation of base state at t=0, td-diagrams showing the evolution along 1d cuts in time (e.g. the base state evolution), measured vs expected periods of standing waves measured at single points, timestep history (dt vs t), movie frames. 
+
 * `how_to_read_base_data_without_yt.ipynb` Shows how to get base state data from plotfiles into python without using Yt at all (the base state data within the plotfiles is just stored as simple textfiles on a uniform grid, so dont have any AMR complications and don't need Yt).
 
 * `detailed_look_at_ICs.ipynb` compares expected and recorded values of the base state pressure and density in detail. 
