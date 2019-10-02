@@ -1,8 +1,22 @@
 # Linear Gravity Waves Problem
 
-Contains
+## Contains
 
   * `experimental_override` - old code relating to linear wave action conservation (see also the corresponding python notebooks for info)
+
+  * `base_state.f90` - replaces the code in the main source tree at compile. Sets up an isothermal atmosphere based on a number of runtime parameters.
+
+  * `initdata.f90` - adds perturbations to the atmosphere to set up the standing waves.
+
+  * `_parameters` - specifies the custom runtime parameters, their types and default values
+
+  * `simple.net` - single fluid species.
+
+  * `prep_visit.sh` - simple script to create a list of plotfiles that visit can open / treat as a timemseries. 
+
+  * `analysis/` - a number of scripts for data analysis associated with the problem
+
+  * `experimental_override/`  - some old stuff, doesn't effect compile (to do with linear wave action hack).
 
 ## Problem Setup
 
@@ -25,5 +39,3 @@ Jupyter notebooks (using Yt) are included in `analysis/`.
 Python scripts in `analysis/`
 
 * `quick_2d_movie.py` script which takes command line args to produce a movie for a time-series of plotfiles. Run  `python quick_2d_movie.py  -h` for help.
-
-There is also `prep_visit.sh` which encapsulates a useful command for processing a series of plotfiles into something visit can treat as a time-series (if you are into that sort of thing). 
