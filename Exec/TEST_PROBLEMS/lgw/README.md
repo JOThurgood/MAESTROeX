@@ -6,7 +6,9 @@
 
 Jupyter notebooks (using Yt) are included in `analysis/`.
 
-* `how_to_read_base_data_without_yt` Shows how to get base state data from plotfiles into python without using Yt at all (the base state data within the plotfiles is just stored as simple textfiles on a uniform grid, so dont have any AMR complications and don't need Yt).
+* `how_to_read_base_data_without_yt.ipynb` Shows how to get base state data from plotfiles into python without using Yt at all (the base state data within the plotfiles is just stored as simple textfiles on a uniform grid, so dont have any AMR complications and don't need Yt).
+
+* `detailed_look_at_ICs.ipynb` compares expected and recorded values of the base state pressure and density in detail. 
 
 Python scripts in `analysis/`
 
