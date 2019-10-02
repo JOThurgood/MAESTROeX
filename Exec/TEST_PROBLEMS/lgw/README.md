@@ -10,6 +10,8 @@ Jupyter notebooks (using Yt) are included in `analysis/`.
 
 * `detailed_look_at_ICs.ipynb` compares expected and recorded values of the base state pressure and density in detail. 
 
+* `energy_evolution.ipynb` a look at the time-series recorded of kinetic, internal, and gravitiational potential energy. Currently shows that the total energy is apparently oscillating, and that their is a currently unexplained mismatch in delta ke and delta ge. Shows also that total internal energy is oscillating (should it?)
+
 Python scripts in `analysis/`
 
 * `quick_2d_movie.py` script which takes command line args to produce a movie for a time-series of plotfiles. Run  `python quick_2d_movie.py  -h` for help.
