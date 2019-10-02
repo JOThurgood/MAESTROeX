@@ -1,5 +1,9 @@
 # Linear Gravity Waves Problem
 
+Contains
+
+  * `experimental_override` - old code relating to linear wave action conservation (see also the corresponding python notebooks for info)
+
 ## Problem Setup
 
 ## Analysis Scripts
@@ -10,7 +14,7 @@ Jupyter notebooks (using Yt) are included in `analysis/`.
 
 * `detailed_look_at_ICs.ipynb` compares expected and recorded values of the base state pressure and density in detail. 
 
-* `energy_evolution.ipynb` a look at the time-series recorded of kinetic, internal, and gravitiational potential energy. Currently shows that the total energy is apparently oscillating, and that their is a currently unexplained mismatch in delta ke and delta ge. Shows also that total internal energy is oscillating (should it?)
+* `energy_evolution.ipynb` a look at the time-series recorded of kinetic, internal, and gravitiational potential energy (i.e. the contents of `diag_vel.out`). Currently shows that the total energy is apparently oscillating, and that their is a currently unexplained mismatch in delta ke and delta ge. Shows also that total internal energy is oscillating (should it?)
 
 Python scripts in `analysis/`
 
