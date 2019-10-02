@@ -2,19 +2,19 @@
 Reaction Networks
 *****************
 
-Introduction to MAESTRO Networks
-================================
+Introduction to MAESTROeX Networks
+==================================
 
-MAESTRO models multiple species, described by the mass density of
+MAESTROeX models multiple species, described by the mass density of
 the fluid, :math:`\rho`, and the mass fraction of the species, :math:`X_k \equiv
 \rho_k/\rho`, where :math:`\rho_k` is the mass density of species :math:`k`. All
-MAESTRO problems, regardless of whether they model reactions, need a
+MAESTROeX problems, regardless of whether they model reactions, need a
 network. In its most basic form, the network supplies the properties
 of the species (atomic mass, atomic number) that are interpreted by
 the equation of state to compute.
 
 Additional networks will be made available in the Microphysics repo [1]_. These
-will have interfaces for both MAESTRO and CASTRO.
+will have interfaces for both MAESTROeX and CASTRO.
 
 Notes of Specific Networks
 ==========================
@@ -53,28 +53,28 @@ ignition_chamulak
 -----------------
 
 This network was introduced in our paper on convection in white dwarfs
-as a model of Type Ia supernovae :raw-latex:`\cite{wdconvect}`. It models
+as a model of Type Ia supernovae :cite:`wdconvect`. It models
 carbon burning in a regime appropriate for a simmering white dwarf,
 and captures the effects of a much larger network by setting the ash
-state and energetics to the values suggested in :raw-latex:`\cite{chamulak:2008}`.
+state and energetics to the values suggested in :cite:`chamulak:2008`.
 
 ignition_simple
 ---------------
 
 This is the original network used in our white dwarf convection
-studies :raw-latex:`\cite{lowMach4}`. It includes a single reaction,
+studies :cite:`lowMach4`. It includes a single reaction,
 :math:`^{12}\mathrm{C}({}^{12}\mathrm{C},\gamma){}^{24}\mathrm{Mg}`, using
-the rate from Caughlin and Fowler :raw-latex:`\cite{caughlan-fowler:1988}`.
+the rate from Caughlin and Fowler :cite:`caughlan-fowler:1988`.
 
 rprox
 -----
 
 This is a network introduced in a paper modeling mixed H/He X-ray
-bursts :raw-latex:`\cite{xrb2}`. rprox that has 10 species approximates hit
+bursts :cite:`xrb2`. rprox that has 10 species approximates hit
 CNO burning, triple-\ :math:`\alpha`, and rp-process breakout up through
-:math:`^{56}\mathrm{Ni}`. Updated rates from ReacLib :raw-latex:`\cite{ReacLib}` are
+:math:`^{56}\mathrm{Ni}`. Updated rates from ReacLib :cite:`ReacLib` are
 used. The overall ideas in this network are based on Appendix C of
-:raw-latex:`\cite{wallacewoosley:1981}`.
+:cite:`wallacewoosley:1981`.
 
 .. [1]
    https://github.com/starkiller-astro/Microphysics

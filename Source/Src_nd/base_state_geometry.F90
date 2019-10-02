@@ -1,10 +1,9 @@
-! a module for storing the geometric information so we don't have to pass it
-!
-! This module provides the coordinate value for the left edge of a base-state
-! zone (r_edge_loc) and the zone center (r_cc_loc).  As always, it is assumed that
-! the base state arrays begin with index 0, not 1.
-
 module base_state_geometry_module
+  ! a module for storing the geometric information so we don't have to pass it
+  !
+  ! This module provides the coordinate value for the left edge of a base-state
+  ! zone (r_edge_loc) and the zone center (r_cc_loc).  As always, it is assumed that
+  ! the base state arrays begin with index 0, not 1.
 
   use amrex_error_module
   use amrex_mempool_module, only : bl_allocate, bl_deallocate
@@ -16,10 +15,6 @@ module base_state_geometry_module
        use_exact_base_state
 
   implicit none
-
-  private
-
-  public :: restrict_base, fill_ghost_base
 
   ! note that for spherical problems the base state only has one level of refiment,
   ! for for spherical, max_radial_level = finest_radial_level = 0
@@ -39,8 +34,8 @@ module base_state_geometry_module
   integer         , allocatable, save, public  :: nr(:)
 
   integer         , allocatable, save, public  :: numdisjointchunks(:)
-  integer         , pointer, save, public  :: r_start_coord(:,:)
-  integer         , pointer, save, public  :: r_end_coord(:,:)
+  integer         , allocatable, save, public  :: r_start_coord(:,:)
+  integer         , allocatable, save, public  :: r_end_coord(:,:)
 
   integer         , allocatable, save, public  :: anelastic_cutoff_density_coord(:)
   integer         , allocatable, save, public  :: base_cutoff_density_coord(:)
@@ -51,6 +46,7 @@ module base_state_geometry_module
   attributes(managed) ::  nr_irreg, center, dr, nr
   attributes(managed) :: base_cutoff_density_coord, anelastic_cutoff_density_coord
   attributes(managed) :: numdisjointchunks
+  attributes(managed) :: r_start_coord, r_end_coord
 #endif
 
 contains
@@ -60,6 +56,7 @@ contains
        dx_fine, &
        nr_irreg_in) &
        bind(C, name="init_base_state_geometry")
+    ! Binds to C function ``init_base_state_geometry``
 
     integer          , intent(in   ) :: max_radial_level_in
     integer          , intent(in   ) :: nr_fine_in
@@ -164,6 +161,7 @@ contains
   subroutine init_base_state_map_sphr(cc_to_r, lo, hi, &
        dx_fine, dx_lev) &
        bind(C, name="init_base_state_map_sphr")
+    ! Binds to C function ``init_base_state_map_sphr``
 
     integer          , intent(in   ) :: lo(3), hi(3)
     double precision , intent(inout) :: cc_to_r(lo(1):hi(1),lo(2):hi(2),lo(3):hi(3))
@@ -202,6 +200,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   subroutine compute_cutoff_coords(rho0) bind(C, name="compute_cutoff_coords")
+    ! Binds to C function ``compute_cutoff_coords``
 
     double precision, intent(in   ) :: rho0(0:max_radial_level,0:nr_fine-1)
 
@@ -352,10 +351,9 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   subroutine init_multilevel(tag_array, finest_radial_level_in) bind(C, name="init_multilevel")
-
     ! compute numdisjointchunks, r_start_coord, r_end_coord
     ! FIXME - right now there is one chunk at each level that spans the domain
-
+    ! Binds to C function ``init_multilevel``
     integer, intent(in   ) :: tag_array(0:max_radial_level,0:nr_fine-1)
     integer, intent(in   ) :: finest_radial_level_in
 
@@ -398,15 +396,15 @@ contains
 
     end do
 
-    if (associated(r_start_coord)) then
-       call bl_deallocate(r_start_coord)
+    if (allocated(r_start_coord)) then
+       deallocate(r_start_coord)
     end if
-    call bl_allocate(r_start_coord,0,finest_radial_level,1,maxchunks)
+    allocate(r_start_coord(0:finest_radial_level,1:maxchunks))
 
-    if (associated(r_end_coord)) then
-       call bl_deallocate(r_end_coord)
+    if (allocated(r_end_coord)) then
+       deallocate(r_end_coord)
     end if
-    call bl_allocate(r_end_coord,0,finest_radial_level,1,maxchunks)
+    allocate(r_end_coord(0:finest_radial_level,1:maxchunks))
 
     if (spherical .eq. 0) then
 
@@ -456,10 +454,12 @@ contains
   subroutine restrict_base(s0,is_cell_centered)
 
     double precision, intent(inout) :: s0(0:max_radial_level,0:nr_fine-1)
-    integer         , intent(in   ) :: is_cell_centered
+    integer  , value, intent(in   ) :: is_cell_centered
 
     ! local
     integer :: n, r, i
+
+    !$gpu
 
     if (is_cell_centered .eq. 1) then
 
@@ -492,11 +492,13 @@ contains
   subroutine fill_ghost_base(s0,is_cell_centered)
 
     double precision, intent(inout) :: s0(0:max_radial_level,0:nr_fine-1)
-    integer         , intent(in   ) :: is_cell_centered
+    integer  , value, intent(in   ) :: is_cell_centered
 
     ! local
     integer          :: n,i,r_crse
     double precision :: del,dpls,dmin,slim,slope
+
+    !$gpu
 
     if (is_cell_centered .eq. 1) then
 
@@ -585,6 +587,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   subroutine destroy_base_state_geometry() bind(C, name="destroy_base_state_geometry")
+    ! Binds to C function ``destroy_base_state_geometry``
 
     deallocate(max_radial_level)
     deallocate(finest_radial_level)
@@ -599,8 +602,8 @@ contains
     deallocate(base_cutoff_density_coord)
     call bl_deallocate(burning_cutoff_density_coord)
     deallocate(numdisjointchunks)
-    call bl_deallocate(r_start_coord)
-    call bl_deallocate(r_end_coord)
+    deallocate(r_start_coord)
+    deallocate(r_end_coord)
 
   end subroutine destroy_base_state_geometry
 

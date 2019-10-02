@@ -1,3 +1,5 @@
+.. _sec:mg:
+
 *********
 Multigrid
 *********
@@ -11,10 +13,10 @@ We solve MG on an AMR hierarchy, which means in places we will encounter
 C-F interfaces. The AMReX MG will modify the stencil for the Laplacian
 at C-F interfaces to ensure the correct solution to the Poisson equation
 across these interfaces. There is no correction step needed in this
-case (this differs from :raw-latex:`\cite{ricker:2008}`).
+case (this differs from :cite:`ricker:2008`).
 
 The MG solver always works with jumps of :math:`2\times` between levels. In
-some codes (but not MAESTRO) we can have jumps of :math:`4\times` between
+some codes (but not MAESTROeX) we can have jumps of :math:`4\times` between
 levels. AMReX uses a mini_cycle in these cases, effectively
 inserting a multigrid level between the two AMR levels and doing a mini
 V-cycle.
@@ -66,7 +68,7 @@ The following parameters are specified when building the mg_tower:
    bottom solver
 
 -  bottom_solver_eps: the tolerance used by the bottom
-   solver. In MAESTRO, this is set via mg_eps_module.
+   solver. In MAESTROeX, this is set via mg_eps_module.
 
 -  max_iter: the maximum number of multigrid cycles.
 
@@ -76,16 +78,16 @@ The following parameters are specified when building the mg_tower:
 -  min_width: minimum size of grid at coarsest multigrid level
 
 -  rel_solver_eps: the relative tolerance of the solver (in
-   MAESTRO, this is set via mg_eps_module.
+   MAESTROeX, this is set via mg_eps_module.
 
 -  abs_solver_eps: the absolute tolerance of the solver (in
-   MAESTRO, this is set via mg_eps_module.
+   MAESTROeX, this is set via mg_eps_module.
 
--  verbose: the verbosity of the multigrid solver. In MAESTRO,
+-  verbose: the verbosity of the multigrid solver. In MAESTROeX,
    this is set via the mg_verbose runtime parameter. Higher
    numbers give more verbosity.
 
--  cg_verbose: the verbosity of the bottom solver. In MAESTRO,
+-  cg_verbose: the verbosity of the bottom solver. In MAESTROeX,
    this is set via the cg_verbose runtime parameter. Higher
    numbers give more verbosity.
 
@@ -175,7 +177,7 @@ For the nodal solver, the choices are:
    all the points in :math:`(i\pm1,j\pm1)`. The
    derivation of this stencil is based on finite-element ideas, defining
    basis functions on the nodes. This is developed in 2-d in
-   :raw-latex:`\cite{almgrenBellSzymczak:1996}`.
+   :cite:`almgrenBellSzymczak:1996`.
 
 -  ND_VATER_STENCIL: this is an alternate dense stencil derived
    using a similar finite-element idea as above, but a different control
@@ -224,7 +226,7 @@ coarsen the problem, again until we get as close to :math:`2^3` as possible.
 At that point, one of the other bottom solvers will be called upon
 to solve the problem.
 
-There are several bottom solvers available in AMReX. For MAESTRO.
+There are several bottom solvers available in AMReX. For MAESTROeX.
 These are set through the mg_bottom_solver (MAC/cell-centered)
 and hg_bottom_solver (nodal) runtime parameters.
 The allowed values are:
@@ -246,10 +248,6 @@ You should use the special bottom solver (4) whenever possible, even
 if it means changing your gridding strategy (as discussed below) to
 make it more efficient.
 
-.. raw:: latex
-
-   \MarginPar{any simple discussion on why we might choose one of the
-     other bottom solvers?}
 
 Special Bottom Solver
 ~~~~~~~~~~~~~~~~~~~~~
@@ -306,7 +304,7 @@ Some grid examples help make this clear:
 Flowchart
 =========
 
-MAESTRO multigrid solves always involve the full AMR hierarchy.
+MAESTROeX multigrid solves always involve the full AMR hierarchy.
 
 Cell-Centered MG
 ----------------
@@ -388,51 +386,46 @@ solve using pure V-cycles.
 -  compute_defect: This is called multiple times, checking for
    convergence at each level.
 
-MAESTRO’s Multigrid Use
-=======================
+MAESTROeX’s Multigrid Use
+=========================
 
-MAESTRO uses multigrid to enforce the velocity constraint through
+MAESTROeX uses multigrid to enforce the velocity constraint through
 projections at the half-time (the MAC projection) and end of the time
 step (the HG projection). Two multigrid solvers are provided by
 AMReX—one for cell-centered data and one for node-centered (nodal)
-data. Both of these are used in MAESTRO.
+data. Both of these are used in MAESTROeX.
 
 The MAC projection operates on the advective velocities predicted at
 the cell-interfaces at the half-time. The edge-centered velocities
-are shown in Figure \ `[fig:mg:MAC] <#fig:mg:MAC>`__. If we consider purely
+are shown in :numref:`fig:mg:MAC`. If we consider purely
 incompressible flow, the projection appears as:
 
 .. math:: D G \phi = D U
 
 where :math:`D` is the divergence operator and :math:`G` is the gradient operator.
 In this discretization, :math:`\phi` is cell-centered (see
-Figure \ `[fig:mg:MAC] <#fig:mg:MAC>`__). The remaining quantities are discretized as:
+:numref:`fig:mg:MAC`. The remaining quantities are discretized as:
 
 -  :math:`DU` is cell-centered,
 
    .. math::
 
-      (DU)_{i,j} = \frac{u_{i+1/2,j} - u_{i-1/2,j}}{\Delta x} + 
+      (DU)_{i,j} = \frac{u_{i+1/2,j} - u_{i-1/2,j}}{\Delta x} +
                      \frac{v_{i,j+1/2} - v_{i,j-1/2}}{\Delta y}
 
 -  :math:`G\phi` is edge-centered, on the MAC grid, as shown in
-   Figure \ `[fig:mg:MAC] <#fig:mg:MAC>`__.
+   :numref:`fig:mg:MAC`.
 
--  :math:`DG\phi` is cell-centered, also shown in Figure \ `[fig:mg:MAC] <#fig:mg:MAC>`__,
+-  :math:`DG\phi` is cell-centered, also shown in :numref:`fig:mg:MAC`,
    computed from :math:`G\phi` using the same differencing as :math:`DU`.
 
-.. raw:: latex
-
-   \centering
-
-.. figure:: \mgfigpath/MAC_mg2
-   :alt: [fig:mg:MAC] Data centerings for the MAC projection
-   :width: 5.5in
-
-   [fig:mg:MAC] Data centerings for the MAC projection
+.. _fig:mg:MAC:
+.. figure:: MAC_mg2.png
+   :alt: Data centerings for the MAC projection
+   :width: 80%
 
 The HG projection projects the cell-centered velocities at the end of
-the timestep. Here, :math:`\phi` is node-centered. Figure \ `[fig:mg:HG] <#fig:mg:HG>`__
+the timestep. Here, :math:`\phi` is node-centered. :numref:`fig:mg:HG`
 shows the locations of the various quantities involved in the HG
 projection. Again considering simple incompressible flow, we now
 solve:
@@ -453,28 +446,23 @@ following centerings:
                              \frac{\frac{1}{2} (v_{i,j} + v_{i-1,j}) -
                                    \frac{1}{2} (v_{i,j-1} + v_{i-1,j-1})}{\Delta y}
 
--  :math:`G\phi` is cell-centered, as shown in Figure \ `[fig:mg:HG] <#fig:mg:HG>`__.
+-  :math:`G\phi` is cell-centered, as shown in :numref:`fig:mg:HG`.
 
 -  :math:`L\phi` is node-centered. This is a direct discretization of
-   the Laplacian operator. By default, MAESTRO uses a dense stencil
+   the Laplacian operator. By default, MAESTROeX uses a dense stencil
    (9-points in 2-d, 27-points in 3-d). Alternately, a *cross*
    stencil can be used (by setting hg_dense_stencil = F). This
    uses 5-points in 2-d, 7-points in 3-d.
 
-   .. raw:: latex
-
-      \centering
-
+   .. _fig:mg:HG:
    .. figure:: \mgfigpath/HG_mg2
-      :alt: [fig:mg:HG] Data centerings for the HG projection
-      :width: 5.5in
-
-      [fig:mg:HG] Data centerings for the HG projection
+      :alt: Data centerings for the HG projection
+      :width: 80%
 
 Convergence Criteria
 ====================
 
-All MAESTRO multigrid solves consist of pure V-cycles.
+All MAESTROeX multigrid solves consist of pure V-cycles.
 
 .. _sec:mgtol:
 
@@ -515,7 +503,7 @@ and the “divu” iterations.
    | spherical: | eps_init_proj_sph  | = :math:`10^{-10}` |
    +------------+--------------------+--------------------+
 
--  *“divu” iterations* (divu_iter called from varden)
+-  *“divu” iterations* (``divu_iter`` called from ``varden``)
 
    The “divu” iterations projects the velocity field from the initial
    projection to satisfy the full constraint (including reactions).
@@ -528,40 +516,32 @@ and the “divu” iterations.
    We start with a loose tolerance and progressively get tighter. The
    tolerances (set in divu_iter) are, for Cartesian:
 
-   .. raw:: latex
-
-      \small
-
-   | lll
-     :math:`\epsilon_\mathrm{divu} = \left  \{ \begin{array}{lll} 
-                        \min\, \{& \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor}^2 \cdot \mathtt{divu\_level\_factor}^{(\mathtt{nlevs}-1)}, \\
-                                 & \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor}^2 \cdot \mathtt{divu\_level\_factor}^2 \, \} & 
+   .. math::
+      \epsilon_\mathrm{divu} = \left  \{ \begin{array}{lll}
+                        \min\, \{& \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor}^2 \cdot \mathtt                     {divu\_level\_factor}^{(\mathtt{nlevs}-1)}, \\
+                               & \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor}^2 \cdot \mathtt{divu\_level\_factor}^2 \, \} &
                                 \quad \mathrm{for}~ i \le \mathtt{init\_divu\_iter} - 2 \\[2mm]
                         \min\, \{& \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor} \cdot \mathtt{divu\_level\_factor}^{(\mathtt{nlevs}-1)}, \\
-                                 & \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor} \cdot \mathtt{divu\_level\_factor}^2 \, \} & 
+                                 & \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_iter\_factor} \cdot \mathtt{divu\_level\_factor}^2 \, \} &
                                 \quad \mathrm{for}~ i = \mathtt{init\_divu\_iter} - 1  \\[2mm]
                         \min\, \{& \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_level\_factor}^{(\mathtt{nlevs}-1)}, \\
-                                 & \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_level\_factor}^2 \, \} & 
+                                 & \!\!\!\mathtt{eps\_divu\_cart} \cdot \mathtt{divu\_level\_factor}^2 \, \} &
                                 \quad \mathrm{for}~ i = \mathtt{init\_divu\_iter}   \\
                                       \end{array}
-                       \right .`
+                       \right .
 
    and for spherical:
 
-   .. raw:: latex
-
-      \small 
-
-   | ll
-     :math:`\epsilon_\mathrm{divu} = \left  \{ \begin{array}{ll} 
+   .. math::
+      \epsilon_\mathrm{divu} = \left  \{ \begin{array}{ll}
                           \mathtt{eps\_divu\_sph} \cdot \mathtt{divu\_iter\_factor}^2 &
                                 \quad \mathrm{for}~ i \le \mathtt{init\_divu\_iter} - 2 \, \\[2mm]
-                         \mathtt{eps\_divu\_sph} \cdot \mathtt{divu\_iter\_factor}  & 
+                         \mathtt{eps\_divu\_sph} \cdot \mathtt{divu\_iter\_factor}  &
                                 \quad \mathrm{for}~ i = \mathtt{init\_divu\_iter} - 1 \, \\[2mm]
                          \mathtt{eps\_divu\_sph}  &
                                 \quad \mathrm{for}~ i = \mathtt{init\_divu\_iter} \, )\\
                        \end{array}
-                       \right .`
+                       \right .
 
    The various parameters are set in mg_eps.f90 and have the default values of:
 
@@ -585,13 +565,16 @@ two (optional) thermal diffusion solves, and the final velocity projection.
    the predictor and corrector portions of the main algorithm.
 
    There are two tolerances here. The norm of the residual is required
-   to be reduced by a relative tolerance of :math:`\epsilon =
-     \min \{ \mathtt{eps\_mac\_max}, \mathtt{eps\_mac} \cdot
-     \mathtt{mac\_level\_factor}^{(\mathtt{nlevs}-1)} \}`. A separate
-   tolerance is used for the bottom
-   solver, :math:`\epsilon_\mathrm{bottom} =
-     \mathtt{eps\_mac\_bottom}`. These parameters are set in
-   mg_eps.f90 and have the default values:
+   to be reduced by a relative tolerance of 
+
+   .. math:: 
+      \epsilon =
+       \min \{ \mathtt{eps\_mac\_max}, \mathtt{eps\_mac} \cdot
+       \mathtt{mac\_level\_factor}^{(\mathtt{nlevs}-1)} \} .
+
+   A separate tolerance is used for the bottom solver,
+   :math:`\epsilon_\mathrm{bottom} = \mathtt{eps\_mac\_bottom}`. These
+   parameters are set in mg_eps.f90 and have the default values:
 
    +------------------+--------------------+
    | eps_mac          | = :math:`10^{-10}` |
