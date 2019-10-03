@@ -301,39 +301,44 @@ contains
     call restrict_base(w0_force,1)
     call fill_ghost_base(w0_force,1)
 
-!!!!!    ! experimental - SINGLE LEVEL ONLY
-!!!!!
-!!!!!    if (max_radial_level /= 0) call amrex_error("experimental changes single level only")
-!!!!!
-!!!!!    pcal = ZERO ! zero all 
-!!!!!    pcal(0,0) = ZERO ! choose bc on \mathcal(P)_{j-1/2} at level 0
-!!!!!
-!!!!!    dt_avg = HALF * (dt + dtold)
-!!!!!
-!!!!!    do n=0,max_radial_level
-!!!!!      do j=1,numdisjointchunks(n)
-!!!!!        do r=r_start_coord(n,j)+1,r_end_coord(n,j)+1
-!!!!!          rho0_avg = HALF * (dt * rho0_old(n,r-1) + dtold *  rho0_new(n,r-1)) / dt_avg
-!!!!!          pcal(n,r) = pcal(n,r-1) - rho0_avg * w0_force(n,r-1) * dr(n) 
-!!!!!        enddo 
-!!!!!      end do
-!!!!!    end do
-!!!!!
-!!!!!    do n=0,max_radial_level
-!!!!!      do j=1,numdisjointchunks(n)
-!!!!!        do r=r_start_coord(n,j),r_end_coord(n,j)
-!!!!!          gamma1bar_p0_avg = (gamma1bar_old(n,r)+gamma1bar_new(n,r)) * &
-!!!!!            (p0_old(n,r)+p0_new(n,r))/4.0d0 ! Q1 ?  
-!!!!!          correction = - pcal(n,r) * grav_const / gamma1bar_p0_avg
-!!!!!print *,'w0_force (before modification)',w0_force(n,r), 'correction ',correction
-!!!!!          w0_force(n,r) = w0_force(n,r) + correction
-!!!!!        enddo 
-!!!!!      end do
-!!!!!    end do
-!!!!!
-!!!!!    call restrict_base(w0_force,1)
-!!!!!    call fill_ghost_base(w0_force,1)
 
+
+
+    ! experimental - SINGLE LEVEL ONLY
+    if (make_w0_changes > 0) then
+
+      if (max_radial_level /= 0) call amrex_error("experimental changes single level only")
+  
+      pcal = ZERO ! zero all 
+      pcal(0,0) = ZERO ! choose bc on \mathcal(P)_{j-1/2} at level 0
+  
+      dt_avg = HALF * (dt + dtold)
+  
+      do n=0,max_radial_level
+        do j=1,numdisjointchunks(n)
+          do r=r_start_coord(n,j)+1,r_end_coord(n,j)+1
+            rho0_avg = HALF * (dt * rho0_old(n,r-1) + dtold *  rho0_new(n,r-1)) / dt_avg
+            pcal(n,r) = pcal(n,r-1) - rho0_avg * w0_force(n,r-1) * dr(n) 
+          end do 
+        end do
+      end do
+  
+      do n=0,max_radial_level
+        do j=1,numdisjointchunks(n)
+          do r=r_start_coord(n,j),r_end_coord(n,j)
+            gamma1bar_p0_avg = (gamma1bar_old(n,r)+gamma1bar_new(n,r)) * &
+              (p0_old(n,r)+p0_new(n,r))/4.0d0 ! Q1 ?  
+            correction = - pcal(n,r) * grav_const / gamma1bar_p0_avg
+            print *,'w0_force (before modification)',w0_force(n,r), 'correction ',correction
+            w0_force(n,r) = w0_force(n,r) + correction
+          end do 
+        end do
+      end do
+  
+      call restrict_base(w0_force,1)
+      call fill_ghost_base(w0_force,1)
+
+    end if ! end if (make_w0_changes > 0)
   end subroutine make_w0_planar
 
 
