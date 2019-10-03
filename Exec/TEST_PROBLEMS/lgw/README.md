@@ -18,7 +18,13 @@
 
   * `experimental_override/`  - some old stuff, doesn't effect compile (to do with linear wave action hack).
 
+  * `make_w0.f90` - local override of `make_w0.f90` from the main source tree (copied over 3-oct-2019), with modifications to account for new lagrange multiplier.
+
 ## Problem Setup
+
+### Runtime parameters
+
+  * `make_w0_changes` integer indicating whether to use modifications in `make_w0.f90`. It's an integer rather than boolean, so you can have things like 0 = dont do anything, 1 = do a certain set of changes, 2 = do some others... 
 
 ## Analysis Scripts
 

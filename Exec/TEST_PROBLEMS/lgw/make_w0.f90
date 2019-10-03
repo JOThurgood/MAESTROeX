@@ -16,6 +16,7 @@ module make_w0_module
   use meth_params_module, only: spherical, maestro_verbose, do_planar_invsq_grav, do_2d_planar_octant, &
                                dpdt_factor, base_cutoff_density, grav_const, &
                                use_exact_base_state, average_base_state
+  use probin_module, only: make_w0_changes
 
   implicit none
 
