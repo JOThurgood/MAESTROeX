@@ -339,6 +339,7 @@ contains
       call fill_ghost_base(w0_force,1)
 
     end if ! end if (make_w0_changes > 0)
+
   end subroutine make_w0_planar
 
 
