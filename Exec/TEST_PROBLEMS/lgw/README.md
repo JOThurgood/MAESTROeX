@@ -16,8 +16,6 @@
 
   * `analysis/` - a number of scripts for data analysis associated with the problem
 
-  * `experimental_override/`  - some old stuff, doesn't effect compile (to do with linear wave action hack).
-
   * `make_w0.f90` - local override of `make_w0.f90` from the main source tree (copied over 3-oct-2019), with modifications to account for new lagrange multiplier.
 
 ## Problem Setup
