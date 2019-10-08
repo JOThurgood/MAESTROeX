@@ -30,9 +30,12 @@ module diag_module
 ! you might find if anyone else makes changes to diag.F90 that get committed 
 ! to the development (then master) branch that you'll want to merge them to keep up with it
 !
-! Currently (8 oct) the only difference is that if the runtime param `diag_action` is true
+! Currently (8 oct) the main difference is that if the runtime param `diag_action` is true
 ! kin_energy and int_energy will actually return to the C++ the value of the velocity and
 ! entropy like terms of linear wave action instead.
+!
+! There is also a modification to use rho full and p0 for all thermodynamic calculations.
+! This has to be commented in/out, there is no associated runtime parameter.
 
   use meth_params_module, only: rho_comp, spec_comp, temp_comp, prob_lo, &
        sponge_start_factor, sponge_center_density, base_cutoff_density, &
