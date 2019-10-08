@@ -186,20 +186,20 @@ contains
             ! experimental action stuff
             if (diag_action) then
               ! 2d only hardcoded for this !!!                         
-              p0an    = pres_base * exp(-y / scale_height) ! analytical pb = pb(z=0) exp(-z/H)      
-              rho0an  = p0an / abs(grav_const) / scale_height          
-              s0an    = log(p0an)/eos_gamma - log(rho0an)              
-                                                                       
-              action_u = action_u + weight * rho0an * vel**2           
+              p0an    = pres_base * exp(-y / scale_height) ! analytical pb = pb(z=0) exp(-z/H)
+              rho0an  = p0an / abs(grav_const) / scale_height
+              s0an    = log(p0an)/eos_gamma - log(rho0an)
+
+              action_u = action_u + weight * rho0an * vel**2
 
               !! gamma law eos doesnt calculate entropy currently      
-              !! entropy_loc = log(eos_state%p)/eos_gamma - log(eos_state%rho)                      
-              !! entropy_loc = log(eos_state%T) - (eos_gamma-ONE)*log(eos_state%rho) + CONST       
-              !! entropy_loc = entropy_loc / eos_gamma                
+              !! entropy_loc = log(eos_state%p)/eos_gamma - log(eos_state%rho)
+              !! entropy_loc = log(eos_state%T) - (eos_gamma-ONE)*log(eos_state%rho) + CONST
+              !! entropy_loc = entropy_loc / eos_gamma
               !! entropy_loc = entropy_loc - s0an                      
-              entropy_loc = - (eos_state%rho - rho0an)/rho0an          
-              s_coeff = abs(grav_const) * scale_height * eos_gamma / (eos_gamma-ONE)                
-              action_s = action_s + weight * rho0an *  entropy_loc**2 * s_coeff                     
+              entropy_loc = - (eos_state%rho - rho0an)/rho0an
+              s_coeff = abs(grav_const) * scale_height * eos_gamma / (eos_gamma-ONE)
+              action_s = action_s + weight * rho0an *  entropy_loc**2 * s_coeff
                                                                        
             endif ! if diag_action
 
