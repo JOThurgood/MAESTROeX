@@ -177,6 +177,7 @@ Maestro::DiagFile (const int step,
                         BL_TO_FORTRAN_3D(mask[mfi]), &use_mask);
             } else {
               diag(&lev, ARLIM_3D(tileBox.loVect()), ARLIM_3D(tileBox.hiVect()),
+                        p0_in.dataPtr(), // experimental
                         BL_TO_FORTRAN_FAB(sin_mf[mfi]),
                         BL_TO_FORTRAN_3D(rho_Hnuc_mf[mfi]),
                         BL_TO_FORTRAN_3D(rho_Hext_mf[mfi]),

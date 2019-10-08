@@ -219,6 +219,7 @@ extern "C"
     // in diag.F90
 
     void diag(const int* lev, const int* lo, const int* hi,
+              const amrex::Real* p0, // experimental
               const amrex::Real* scal, const int* s_lo, const int* s_hi, const int* nc_s,
               const amrex::Real* rho_Hnuc, const int* hn_lo, const int* hn_hi,
               const amrex::Real* rho_Hext, const int* he_lo, const int* he_hi,

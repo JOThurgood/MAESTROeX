@@ -55,6 +55,7 @@ module diag_module
 contains
 
   subroutine diag(lev, lo, hi, &
+                       p0, & !experimental
                        scal, s_lo, s_hi, nc_s, &
                        rho_Hnuc, hn_lo, hn_hi, &
                        rho_Hext, he_lo, he_hi, &
@@ -85,6 +86,9 @@ contains
     integer         , intent (in   ) :: m_lo(3), m_hi(3)
     integer         , intent (in   ) :: mask(m_lo(1):m_hi(1),m_lo(2):m_hi(2),m_lo(3):m_hi(3))
     integer         , intent (in   ) :: use_mask
+
+    ! experimental
+    double precision, intent(in   ) :: p0(0:max_radial_level,0:nr_fine-1)
 
     ! Local variables
     integer            :: i, j, k
@@ -215,7 +219,6 @@ contains
       kin_ener = action_u
       int_ener = action_s
     endif
-
 
   end subroutine diag
 
