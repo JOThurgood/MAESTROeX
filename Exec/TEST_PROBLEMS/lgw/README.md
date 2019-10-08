@@ -2,8 +2,6 @@
 
 ## Contains
 
-  * `experimental_override` - old code relating to linear wave action conservation (see also the corresponding python notebooks for info)
-
   * `base_state.f90` - replaces the code in the main source tree at compile. Sets up an isothermal atmosphere based on a number of runtime parameters.
 
   * `initdata.f90` - adds perturbations to the atmosphere to set up the standing waves.
