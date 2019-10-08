@@ -171,12 +171,18 @@ contains
 #endif
             end if
 
-            ! call the EOS to get the sound speed and internal energy
-            eos_state%T     = scal(i,j,k,temp_comp)
+!            ! call the EOS to get the sound speed and internal energy
+!            eos_state%T     = scal(i,j,k,temp_comp)
+!            eos_state%rho   = scal(i,j,k,rho_comp)
+!            eos_state%xn(:) = scal(i,j,k,spec_comp:spec_comp+nspec-1)/eos_state%rho
+!                
+!            call eos(eos_input_rt, eos_state)
+
+            ! alternative using full rho and the base state pressure to calculate the rest
             eos_state%rho   = scal(i,j,k,rho_comp)
+            eos_state%p     = p0(lev,j)
             eos_state%xn(:) = scal(i,j,k,spec_comp:spec_comp+nspec-1)/eos_state%rho
-                
-            call eos(eos_input_rt, eos_state)
+            call eos(eos_input_rp, eos_state)
 
             ! kinetic, internal, and nuclear energies
             kin_ener = kin_ener + weight*scal(i,j,k,rho_comp)*vel**2
