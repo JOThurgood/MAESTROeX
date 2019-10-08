@@ -16,7 +16,11 @@
 
   * `make_w0.f90` - local override of `make_w0.f90` from the main source tree (copied over 3-oct-2019), with modifications to account for new lagrange multiplier.
 
-  * `diag.f90` - local override of `diag.f90` from the main source tree (copied over 8-oct-2019), with modifications to override the KE and IE quantities in `diag_vel.out` with the linear wave action quantities.
+  * `diag.f90` - local override of `diag.f90` from the main source tree (copied over 8-oct-2019), with modifications to override the KE and IE quantities in `diag_vel.out` with the linear wave action quantities. It also takes `p0` as an argument
+
+  * `Maestro_F.H` - override to change the signature of `diag`
+
+  * `MaestroDiag.cpp` - override to pass `p0` to `diag`
 
 ## Problem Setup
 
