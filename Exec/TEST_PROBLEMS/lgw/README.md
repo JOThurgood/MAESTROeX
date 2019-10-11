@@ -24,11 +24,24 @@
 
 ## Problem Setup
 
+  Sets up a standing oscillation in an isothermal atmosphere. See the design doc for a full problem description.
+
 ### Runtime parameters
 
   * `make_w0_changes` integer indicating whether to use modifications in `make_w0.f90`. It's an integer rather than boolean, so you can have things like 0 = dont do anything, 1 = do a certain set of changes, 2 = do some others... 
 
   * `diag_action` boolean indicating whether to replace the kinetic and internal energies in `diag_vel.out` with the velocity and entropy like linear wave action quantities instead.
+
+  * `pres_base` pressure at the base of the atmosphere
+  * `dens_base` densiy at base
+  * `scale_height` scale height of the atmosphere
+  * `pert_amp` amplitude of oscillation (used in `initdata.f90`, see there for definition). Is a factor multiplied by `rho_base`.
+  * `k_hoz` a horizontal wavenumber (normalised by pi, see `initdata.f90` for prescription. Think there should be a factor of two used really).
+  * `k_vert` vertical wavenumber
+  * `use_p_dens_g` use `p`, `dens_base` and (constant) `g` to consistently choose the scale height
+  * `use_p_H_g` use `p`, `scale_height` and constant `g` to consistently set density at base
+  * (the two above are obviously mutually exclusive)
+
 
 ## Analysis Scripts
 
